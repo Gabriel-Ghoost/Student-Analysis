@@ -1,0 +1,68 @@
+
+Regression Results: Push Factors in Home Country
+====================================================================================================
+                                                                   Dependent variable:              
+                                                     -----------------------------------------------
+                                                                     Move to Moscow                 
+                                                               (1)                     (2)          
+----------------------------------------------------------------------------------------------------
+Constant                                                 0.765** (0.360)        1.520*** (0.365)    
+Employment prospects                                      0.021 (0.027)           0.011 (0.026)     
+Scholarship                                               0.021 (0.020)          0.033* (0.019)     
+HSE quality                                               0.026 (0.031)           0.003 (0.030)     
+HSE reputation                                            0.004 (0.023)           0.021 (0.023)     
+Recognition of HSE degree in my Home Country              0.007 (0.019)           0.009 (0.018)     
+Support services for International Students              0.034* (0.019)          0.033* (0.018)     
+Attraction to Russian culture                            -0.003 (0.018)          -0.0002 (0.017)    
+Recommendations from family and friends                  -0.012 (0.040)          -0.023 (0.038)     
+Proximity                                                 0.094 (0.057)          0.097* (0.053)     
+Cost of living                                          -0.139*** (0.053)        -0.086* (0.050)    
+Choice of program                                       0.212*** (0.077)        0.192*** (0.072)    
+HSE position in University rankings                     -0.182** (0.071)        -0.183*** (0.066)   
+HSE international alliances                               0.065 (0.047)           0.040 (0.044)     
+Asia                                                      0.555 (0.410)           0.373 (0.386)     
+CIS                                                      0.778* (0.401)           0.609 (0.376)     
+Europe                                                    0.589 (0.439)           0.663 (0.410)     
+Middle East                                               0.444 (0.563)           0.456 (0.538)     
+South America                                             0.348 (0.603)           0.261 (0.641)     
+Age                                                                             -0.160*** (0.033)   
+Home Country                                                                     0.002** (0.001)    
+Gender                                                                          -0.155*** (0.043)   
+Recomendations from family and friends*Asia              0.117** (0.055)         0.096* (0.052)     
+Recomendations from family and friends*CIS                0.010 (0.048)           0.006 (0.045)     
+Recomendations from family and friends*Europe             0.105 (0.068)          0.129** (0.064)    
+Recomendations from family and friends*Middle East        0.142 (0.086)          0.218** (0.084)    
+Recomendations from family and friends*South America      0.003 (0.086)          -0.071 (0.084)     
+Proximity*Asia                                           -0.107 (0.072)          -0.092 (0.069)     
+Proximity*CIS                                            -0.103 (0.064)          -0.100* (0.060)    
+Proximity*Europe                                         -0.169* (0.091)         -0.151* (0.085)    
+Proximity*Middle East                                   -0.187** (0.093)        -0.193** (0.088)    
+Proximity*South America                                  -0.021 (0.117)          -0.081 (0.114)     
+Cost of living*Asia                                      -0.005 (0.066)          -0.013 (0.062)     
+Cost of living*CIS                                       0.122** (0.060)          0.076 (0.056)     
+Cost of living*Europe                                     0.136 (0.085)           0.050 (0.081)     
+Cost of living*Middle East                               -0.048 (0.097)         -0.192** (0.096)    
+Cost of living*South America                              0.083 (0.102)           0.065 (0.106)     
+Choice of program*Asia                                  -0.211** (0.091)        -0.202** (0.086)    
+Choice of program*CIS                                    -0.168* (0.086)         -0.156* (0.080)    
+Choice of program*Europe                                 -0.107 (0.104)          -0.136 (0.097)     
+Choice of program*Middle East                            -0.245 (0.149)          -0.127 (0.144)     
+Choice of program*South America                          -0.170 (0.117)          -0.113 (0.126)     
+HSE position in University rankings*Asia                0.211*** (0.080)         0.190** (0.075)    
+HSE position in University rankings*CIS                  0.165** (0.075)         0.165** (0.070)    
+HSE position in University rankings*Europe               0.158* (0.093)          0.154* (0.087)     
+HSE position in University rankings*Middle East          0.344** (0.160)          0.188 (0.157)     
+HSE position in University rankings*South America        0.290** (0.125)         0.233* (0.120)     
+HSE international alliances*Asia                        -0.119** (0.059)         -0.071 (0.057)     
+HSE international alliances*CIS                          -0.101* (0.052)         -0.076 (0.049)     
+HSE international alliances*Europe                      -0.250*** (0.069)       -0.222*** (0.065)   
+HSE international alliances*Middle East                  -0.104 (0.121)          -0.022 (0.115)     
+HSE international alliances*South America               -0.223** (0.108)         -0.132 (0.107)     
+----------------------------------------------------------------------------------------------------
+Observations                                                   405                     393          
+R2                                                            0.412                   0.493         
+Adjusted R2                                                   0.333                   0.417         
+Residual Std. Error                                     0.400 (df = 356)        0.373 (df = 341)    
+F Statistic                                          5.204*** (df = 48; 356) 6.493*** (df = 51; 341)
+====================================================================================================
+Note:                                                                    *p<0.1; **p<0.05; ***p<0.01

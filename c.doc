@@ -1,0 +1,33 @@
+
+Regression Results: Push Factors in Home Country
+=============================================================================================
+                                                           Dependent variable:               
+                                             ------------------------------------------------
+                                                              Move to Moscow                 
+                                                       (1)                     (2)           
+---------------------------------------------------------------------------------------------
+Constant                                        1.243*** (0.132)         1.990*** (0.174)    
+Employment prospects                             0.058** (0.028)          0.027 (0.026)      
+Proximity                                       0.073*** (0.019)         0.053*** (0.018)    
+Cost of living                                  -0.087*** (0.021)       -0.057*** (0.019)    
+Scholarship                                       0.005 (0.020)           0.024 (0.019)      
+HSE quality                                       0.039 (0.032)           0.006 (0.030)      
+HSE reputation                                    0.028 (0.024)           0.030 (0.022)      
+Program choice                                   0.060** (0.027)         0.058** (0.025)     
+Recommendations from family and friends           0.029 (0.018)           0.009 (0.017)      
+Attraction to Russian culture                    -0.024 (0.017)           -0.007 (0.016)     
+Recognition of HSE degree in my Home Country     -0.023 (0.019)           -0.011 (0.017)     
+HSE position in University rankings              -0.040* (0.024)          -0.036 (0.022)     
+Support services for International Students       0.020 (0.020)           0.021 (0.018)      
+HSE international stragtegic alliances          -0.042** (0.020)         -0.037** (0.018)    
+Age                                                                     -0.223*** (0.032)    
+Home Country                                                             0.003*** (0.001)    
+Gender                                                                  -0.162*** (0.042)    
+---------------------------------------------------------------------------------------------
+Observations                                           405                     393           
+R2                                                    0.207                   0.358          
+Adjusted R2                                           0.181                   0.330          
+Residual Std. Error                             0.444 (df = 391)         0.400 (df = 376)    
+F Statistic                                  7.847*** (df = 13; 391) 13.094*** (df = 16; 376)
+=============================================================================================
+Note:                                                             *p<0.1; **p<0.05; ***p<0.01

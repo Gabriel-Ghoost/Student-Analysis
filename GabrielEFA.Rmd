@@ -1,0 +1,283 @@
+---
+title: "EFA"
+author: "Gabriel"
+date: "April 28, 2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+getwd()
+setwd("C:/Users/GHOOST/Desktop/New Lit/data")
+```
+
+
+```{r include=FALSE}
+#attaching packages
+library(lavaan)
+library(foreign)
+library(car)
+library(psych)
+library(ggplot2)
+library(summarytools)
+library(knitr)
+library(gridExtra)
+library(kableExtra)
+library(stargazer)
+library(multcomp)
+
+```
+
+
+```{r include=FALSE}
+#attaching the data
+data<-read.csv("International Students Survey.csv")
+
+attach(data)
+
+is.numeric(Competitive.university.admission.process..difficult.to.gain.admission.to.a.quality.local.institution)
+Competitive.University.admission.process<-Competitive.university.admission.process..difficult.to.gain.admission.to.a.quality.local.institution
+is.numeric(Competitive.University.admission.process)
+
+is.numeric(Perceived.advantage.of.international.degree.over.a.local.one.at.the.local.job.market)
+Perceived.advantage.of.international.degree<-Perceived.advantage.of.international.degree.over.a.local.one.at.the.local.job.market
+is.numeric(Perceived.advantage.of.international.degree)
+
+```
+
+#Push Factors
+```{r}
+#exploratory factor analysis to allow for indexing.
+#creating a data frame for push factors
+PushFactors <-data.frame(Unavailability.of.the.desired.study.program,Low.quality.of.education
+                         ,Competitive.University.admission.process
+                         ,Perceived.advantage.of.international.degree
+                         ,Unavailability.of.scholarship.opportunities
+                         ,Encouragement.from.my.family.to.study.abroad,Encouragement.from..my.friends.to.study.abroad
+                         ,Better.earning.prospects.abroad, The.social.prestige.of.studying.abroad
+                         ,To.experience.a.different.culture)
+```
+
+
+```{r}
+#principal component analysis
+pushpc <- princomp(~Unavailability.of.the.desired.study.program+
+                     Low.quality.of.education
+                   +Competitive.University.admission.process
+                   +Perceived.advantage.of.international.degree
+                   +Unavailability.of.scholarship.opportunities
+                   +Encouragement.from.my.family.to.study.abroad+
+                     Encouragement.from..my.friends.to.study.abroad
+                   +Better.earning.prospects.abroad+The.social.prestige.of.studying.abroad
+                   +To.experience.a.different.culture, data = PushFactors, 
+                   cor = FALSE, na.action = na.omit) 
+
+summary(pushpc)
+
+```
+
+
+```{r}
+push.efa2 <- factanal(~Unavailability.of.the.desired.study.program+
+                        Low.quality.of.education
+                      +Competitive.University.admission.process
+                      +Perceived.advantage.of.international.degree
+                      +Unavailability.of.scholarship.opportunities
+                      +Encouragement.from.my.family.to.study.abroad+
+                        Encouragement.from..my.friends.to.study.abroad
+                      +Better.earning.prospects.abroad+The.social.prestige.of.studying.abroad
+                      +To.experience.a.different.culture, 
+                      factors = 4, data = PushFactors, cor = FALSE, na.action = na.omit)
+
+print(push.efa2, digits=2, cutoff=.3, sort=TRUE)
+```
+with p-value 0.0415, four factors are sufficient.
+
+
+```{r include=FALSE}
+#indexing the correlated factors
+
+#encouragement from family and friends
+cor.test(Encouragement.from..my.friends.to.study.abroad,Encouragement.from.my.family.to.study.abroad)
+encouragement.from.family.friends<-(Encouragement.from..my.friends.to.study.abroad+Encouragement.from.my.family.to.study.abroad)/2
+table(encouragement.from.family.friends)
+PushFactors$encouragement.from.family.friends<-recode(encouragement.from.family.friends, "1=1; 1.5:2=2; 2.5:3=3; 3.5:4=4; 4.5:5=5")
+table(PushFactors$encouragement.from.family.friends)
+
+#advantages of studying abroad
+cor.test(Better.earning.prospects.abroad,The.social.prestige.of.studying.abroad)
+advantages.of.studying.abroad<-(Better.earning.prospects.abroad+The.social.prestige.of.studying.abroad)/2
+table(advantages.of.studying.abroad)
+PushFactors$advantages.of.studying.abroad<-recode(advantages.of.studying.abroad, "1=1; 1.5:2=2; 2.5:3=3; 3.5:4=4; 4.5:5=5")
+table(PushFactors$advantages.of.studying.abroad)
+
+#access to education
+cor.test(Unavailability.of.the.desired.study.program,Low.quality.of.education)
+access.to.education<-(Unavailability.of.the.desired.study.program+Low.quality.of.education)/2
+table(access.to.education)
+PushFactors$access.to.education<-recode(access.to.education, "1=1; 1.5:2=2; 2.5:3=3; 3.5:4=4; 4.5:5=5")
+table(PushFactors$access.to.education)
+
+attach(PushFactors)
+```
+
+
+Push Factors
+```{r}
+
+PushFactorsHC <-data.frame(access.to.education, Competitive.University.admission.process
+                           ,Perceived.advantage.of.international.degree
+                           ,Unavailability.of.scholarship.opportunities
+                           ,encouragement.from.family.friends
+                           ,advantages.of.studying.abroad
+                           ,To.experience.a.different.culture)
+```
+
+
+#Pull Factors
+
+```{r include=FALSE}
+Recommendations.from.family.friends<-Personal.recommendations.from.parents..relatives..and.friends
+#creating a data frame for push factors
+
+PullFactors<-data.frame(Availability.of.desired.study.program,Higher.quality.of.education..compared.to.home.country.,
+                        Low.cost.of.living,Low.tuition.fees,Awarded.scholarships.or.tuition.waiver,
+                        Attraction.to.Russian.culture..society,Career.prospects.in.Russia,
+                        Recommendations.from.family.friends,cultural.proximity.with.home,
+                        geographical.proximity.with.home,Quality.and.reputation.of.the.University,
+                        Recognition.of.the.degree.in.my.home.country,Quality.of.the.teaching.staff,
+                        The.reputation.of.the.alumni,The.reputation.of.the.international.community,
+                        HSE.position.in.international.university.rankings,Cost.of.tuition.for.international.students,
+                        Availability.of.scholarships,Support.services.for.international.students,
+                        Graduates.employment.rates,HSE.s.international.strategic.alliances,
+                        Local.employers.preference.of..degrees.awarded.by.HSE)
+
+```
+
+
+```{r include=FALSE}
+#exploratory factor analysis to allow for index.
+#principal component analysis
+
+fit.pc <- princomp(~Availability.of.desired.study.program+Higher.quality.of.education..compared.to.home.country.+
+                        Low.cost.of.living+Low.tuition.fees+Awarded.scholarships.or.tuition.waiver+
+                        Attraction.to.Russian.culture..society+Career.prospects.in.Russia+
+                        Recommendations.from.family.friends+cultural.proximity.with.home+
+                        geographical.proximity.with.home+Quality.and.reputation.of.the.University+
+                        Recognition.of.the.degree.in.my.home.country+Quality.of.the.teaching.staff+
+                        The.reputation.of.the.alumni+The.reputation.of.the.international.community+
+                        HSE.position.in.international.university.rankings+Cost.of.tuition.for.international.students+
+                        Availability.of.scholarships+Support.services.for.international.students+
+                        Graduates.employment.rates+HSE.s.international.strategic.alliances+
+                        Local.employers.preference.of..degrees.awarded.by.HSE, 
+                   data = PullFactors, cor = FALSE, na.action = na.omit)
+
+summary(fit.pc)
+```
+
+
+Efa with 8 factors
+```{r}
+fit.efa2 <- factanal(~Availability.of.desired.study.program+Higher.quality.of.education..compared.to.home.country.+
+                        Low.cost.of.living+Low.tuition.fees+Awarded.scholarships.or.tuition.waiver+
+                        Attraction.to.Russian.culture..society+Career.prospects.in.Russia+
+                        Recommendations.from.family.friends+cultural.proximity.with.home+
+                        geographical.proximity.with.home+Quality.and.reputation.of.the.University+
+                        Recognition.of.the.degree.in.my.home.country+Quality.of.the.teaching.staff+
+                        The.reputation.of.the.alumni+The.reputation.of.the.international.community+
+                        HSE.position.in.international.university.rankings+Cost.of.tuition.for.international.students+
+                        Availability.of.scholarships+Support.services.for.international.students+
+                        Graduates.employment.rates+HSE.s.international.strategic.alliances+
+                        Local.employers.preference.of..degrees.awarded.by.HSE,
+                     factors = 8, data = PullFactors, cor = FALSE, na.action = na.omit)
+
+print(fit.efa2, digits=2, cutoff=.3, sort=TRUE)
+```
+with p-value 6.54e-10 8 factors are sufficient.
+
+
+
+```{r include=FALSE}
+#indexing the correlated pull factors
+
+#prospect of employment 
+cor.test(Graduates.employment.rates,Local.employers.preference.of..degrees.awarded.by.HSE)
+cor.test(Career.prospects.in.Russia,Local.employers.preference.of..degrees.awarded.by.HSE)
+cor.test(Graduates.employment.rates,Career.prospects.in.Russia)
+employment.prospect<-(Graduates.employment.rates+Local.employers.preference.of..degrees.awarded.by.HSE+
+                        Career.prospects.in.Russia)/3
+employment.prospect<-round(employment.prospect,2)
+table(employment.prospect)
+PullFactors$employment.prospect<-recode(employment.prospect, "1:1.33=1; 1.67:2.33=2; 2.67:3.33=3; 3.67:4.33=4; 4.67:5=5")
+table(PullFactors$employment.prospect)
+
+#proximity
+cor.test(cultural.proximity.with.home,geographical.proximity.with.home)
+proximity<-(cultural.proximity.with.home+geographical.proximity.with.home)/2
+table(proximity)
+PullFactors$proximity<-recode(proximity, "1=1; 1.5:2=2; 2.5:3=3; 3.5:4=4; 4.5:5=5")
+table(PullFactors$proximity)
+
+#cost
+cor.test(Low.cost.of.living,Low.tuition.fees)
+cor.test(Low.cost.of.living,Cost.of.tuition.for.international.students)
+cor.test(Low.tuition.fees,Cost.of.tuition.for.international.students)
+cost.of.living<-(Low.cost.of.living+Low.tuition.fees+Cost.of.tuition.for.international.students)/3
+cost.of.living<-round(cost.of.living,2)
+table(cost.of.living)
+PullFactors$cost.of.living<-recode(cost.of.living, "1:1.33=1; 1.67:2.33=2; 2.67:3.33=3; 3.67:4.33=4; 4.67:5=5")
+table(PullFactors$cost.of.living)
+
+#scholarships
+cor.test(Awarded.scholarships.or.tuition.waiver,Availability.of.scholarships)
+scholarship<-(Awarded.scholarships.or.tuition.waiver+Availability.of.scholarships)/2
+table(scholarship)
+PullFactors$scholarship<-recode(scholarship, "1=1; 1.5:2=2; 2.5:3=3; 3.5:4=4; 4.5:5=5")
+table(PullFactors$scholarship)
+
+#HSE Quality
+cor.test(Quality.and.reputation.of.the.University,Quality.of.the.teaching.staff)
+HSE.quality<-(Quality.and.reputation.of.the.University+Quality.of.the.teaching.staff)/2
+table(HSE.quality)
+PullFactors$HSE.quality<-recode(HSE.quality, "1=1; 1.5:2=2; 2.5:3=3; 3.5:4=4; 4.5:5=5")
+table(PullFactors$HSE.quality)
+
+#HSE Reputation
+cor.test(The.reputation.of.the.alumni, The.reputation.of.the.international.community)
+HSE.reputation<-(The.reputation.of.the.alumni+The.reputation.of.the.international.community)/2
+table(HSE.reputation)
+PullFactors$HSE.reputation<-recode(HSE.reputation, "1=1; 1.5:2=2; 2.5:3=3; 3.5:4=4; 4.5:5=5")
+table(PullFactors$HSE.reputation)
+
+#Program Choice
+cor.test(Higher.quality.of.education..compared.to.home.country., Availability.of.desired.study.program)
+program.choice<-(Higher.quality.of.education..compared.to.home.country.+ Availability.of.desired.study.program)/2
+table(program.choice)
+PullFactors$program.choice<-recode(program.choice, "1=1; 1.5:2=2; 2.5:3=3; 3.5:4=4; 4.5:5=5")
+table(PullFactors$program.choice)
+
+attach(PullFactors)
+```
+
+Pull factors
+```{r}
+PullFactorsRuHSE<-data.frame(program.choice,cost.of.living,proximity, scholarship,HSE.quality, 
+                             HSE.reputation, Attraction.to.Russian.culture..society,
+                             Recognition.of.the.degree.in.my.home.country,Recommendations.from.family.friends,
+                             HSE.position.in.international.university.rankings,Support.services.for.international.students,
+                             HSE.s.international.strategic.alliances,employment.prospect)
+
+```
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,52 @@
+
+Regression Results: Push Factors in Home Country
+=============================================================================================================
+                                                                            Dependent variable:              
+                                                              -----------------------------------------------
+                                                                              Move to Moscow                 
+                                                                        (1)                     (2)          
+-------------------------------------------------------------------------------------------------------------
+Constant                                                          0.626** (0.307)        1.303*** (0.318)    
+Benefits of studying abroad                                        0.022 (0.024)           0.007 (0.023)     
+Unavailability of scholarship opportunities                       -0.021 (0.017)          -0.014 (0.016)     
+Competitive university admission process                          0.040** (0.018)         0.033* (0.017)     
+Access to education                                                0.017 (0.055)           0.052 (0.052)     
+Encouragement from family and friends                              0.067 (0.049)           0.038 (0.046)     
+Perceieved advantage of an international degree                  -0.112** (0.056)         -0.073 (0.053)     
+Experience a different culture                                   0.164*** (0.057)        0.139*** (0.053)    
+Asia                                                               0.468 (0.366)           0.418 (0.347)     
+CIS                                                              1.180*** (0.333)        1.032*** (0.314)    
+Europe                                                            1.095** (0.487)         0.961** (0.458)    
+Middle East                                                      2.016*** (0.519)        1.981*** (0.495)    
+South America                                                      0.124 (0.589)          -0.139 (0.595)     
+Age                                                                                      -0.154*** (0.033)   
+Home Country                                                                              0.002* (0.001)     
+Gender                                                                                   -0.148*** (0.041)   
+Access to education*Asia                                           0.028 (0.064)          -0.009 (0.061)     
+Access to education*CIS                                            0.003 (0.062)          -0.034 (0.059)     
+Access to education*Europe                                         0.148 (0.092)           0.129 (0.087)     
+Access to education*Middle East                                  -0.319*** (0.116)       -0.342*** (0.110)   
+Access to education*South America                                  0.090 (0.094)           0.052 (0.098)     
+Encouragement from family and friends*Asia                        -0.056 (0.064)          -0.014 (0.060)     
+Encouragement from family and friends*CIS                         -0.069 (0.055)          -0.037 (0.053)     
+Encouragement from family and friends*Europe                     -0.231** (0.090)        -0.245*** (0.085)   
+Encouragement from family and friends*Middle East                 -0.012 (0.097)           0.057 (0.094)     
+Encouragement from family and friends*South America                0.142 (0.098)           0.116 (0.103)     
+Perceieved advantage of an international degree*Asia               0.115 (0.070)           0.053 (0.067)     
+Perceieved advantage of an international degree*CIS                0.084 (0.063)           0.048 (0.060)     
+Perceieved advantage of an international degree*Europe             0.064 (0.077)           0.040 (0.072)     
+Perceieved advantage of an international degree*Middle East       0.219** (0.095)         0.173* (0.091)     
+Perceieved advantage of an international degree*South America      0.075 (0.091)           0.104 (0.102)     
+Experience a different culture*Asia                              -0.158** (0.068)         -0.111* (0.065)    
+Experience a different culture*CIS                               -0.182*** (0.060)       -0.147*** (0.056)   
+Experience a different culture*Europe                            -0.234** (0.093)        -0.180** (0.088)    
+Encouragement from family and friends*Middle East                -0.344*** (0.091)       -0.340*** (0.087)   
+Experience a different culture*South America                     -0.204** (0.098)         -0.152 (0.095)     
+-------------------------------------------------------------------------------------------------------------
+Observations                                                            406                     394          
+R2                                                                     0.371                   0.450         
+Adjusted R2                                                            0.317                   0.397         
+Residual Std. Error                                              0.404 (df = 373)        0.378 (df = 358)    
+F Statistic                                                   6.863*** (df = 32; 373) 8.381*** (df = 35; 358)
+=============================================================================================================
+Note:                                                                             *p<0.1; **p<0.05; ***p<0.01

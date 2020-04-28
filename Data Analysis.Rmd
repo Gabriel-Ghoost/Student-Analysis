@@ -1,0 +1,868 @@
+---
+title: "Data Analysis"
+author: "Gabriel"
+date: "March 22, 2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+#defining the working directory
+```{r}
+getwd()
+setwd("C:/Users/GHOOST/Desktop/New Lit/data")
+```
+
+
+#attaching the packages
+```{r}
+library(car)
+library(foreign)
+library(ggplot2)
+library(gridExtra)
+```
+
+#attaching the data
+```{r}
+data<-read.csv("International Students Survey.csv")
+
+attach(data)
+```
+
+
+#Data preparation
+
+Age
+```{r}
+table(Age)
+
+summary(as.numeric(Age))
+
+data$age<-recode(as.numeric(Age),"17:21=1; 22:26=2;27:hi=3")
+
+table(data$age)
+
+data$age<-factor(data$age,lab=c("17 to 21 yrs", "22 to 26 yrs", " 27 yrs and older")) 
+
+table(data$age)
+
+```
+
+
+country regions
+```{r}
+table(Home.country)
+
+data$region[data$Home.country == 'Algeria'| 
+    data$Home.country == 'Botswana'| data$Home.country == 'Cameroon'|
+    data$Home.country == 'Chad'| data$Home.country == 'Congo'|
+    data$Home.country == 'DR Congo'|data$Home.country == 'Eritrea'|
+    data$Home.country == 'Ivory Coast'|
+    data$Home.country == 'Gambia'|data$Home.country == 'Ghana'|
+    data$Home.country == 'Kenya'|data$Home.country == 'Madagascar'|
+    data$Home.country == 'Niger'|data$Home.country == 'Nigeria'|
+    data$Home.country == 'South Africa'|data$Home.country == 'Sudan'|
+    data$Home.country == 'Uganda'|data$Home.country == 'Zambia'] <- 'Africa'
+
+
+data$region[data$Home.country == 'Australia'| data$Home.country == 'Austria'| 
+    data$Home.country == 'Bosnia and Herzegovina'|
+    data$Home.country == 'Bulgaria'| data$Home.country == 'Europe'|
+    data$Home.country == 'France'| data$Home.country == 'Germany'|
+    data$Home.country == 'Italy'|data$Home.country == 'Poland'|
+    data$Home.country == 'Portugal'|data$Home.country == 'Serbia'|
+    data$Home.country == 'Spain'|data$Home.country == 'Switzerland'|
+    data$Home.country == 'Republic of North Macedonia'|
+    data$Home.country == 'USA'] <- 'Europe, USA & Australia'
+
+
+data$region[data$Home.country == 'Armenia'| 
+    data$Home.country == 'Azerbaijan'|data$Home.country == 'Belarus'|
+    data$Home.country == 'Estonia'|data$Home.country == 'Georgia'|
+    data$Home.country == 'Georgia'|data$Home.country == 'Kazakhstan'|
+    data$Home.country == 'Kyrgyzstan'|data$Home.country == 'Latvia'|
+    data$Home.country == 'Moldova'|data$Home.country == 'Tajikistan'|
+    data$Home.country == 'Turkmenistan'|data$Home.country == 'Ukraine'|
+    data$Home.country == 'Uzbekistan'] <- 'Former Soviet Republics'
+
+
+data$region[data$Home.country == 'Bahrain'| 
+    data$Home.country == 'Egypt'| data$Home.country == 'Iran'|
+    data$Home.country == 'Israel'| data$Home.country == 'Lebanon'|
+    data$Home.country == 'Syria'| 
+    data$Home.country == 'Turkey'] <- 'Middle East'
+
+
+data$region[data$Home.country == 'Bangladesh'| 
+    data$Home.country == 'India'| data$Home.country == 'Nepal'|
+    data$Home.country == 'Pakistan'| 
+    data$Home.country == 'Sri Lanka'] <- 'Southern Asia'
+
+data$region[data$Home.country == 'Brazil'| 
+    data$Home.country == 'Colombia'|data$Home.country == 'Ecuador'|
+    data$Home.country == 'Guatemala'| data$Home.country == 'Haiti'|
+    data$Home.country == 'Mexico'|
+    data$Home.country == 'Nicaragua'] <- 'Southern America'
+
+data$region[data$Home.country == 'China'| 
+    data$Home.country == 'Japan'|data$Home.country == 'Mongolia'| 
+    data$Home.country == 'South Korea'|data$Home.country == 'Hong Kong'|
+    data$Home.country == 'Taiwan'] <- 'Eastern Asia'
+
+data$region[data$Home.country == 'Indonesia'|
+    data$Home.country == 'Philippines'|data$Home.country == 'Thailand'|
+    data$Home.country == 'Vietnam'] <- 'Southern Eastern Asia'
+
+table(data$region, useNA = "ifany")
+
+attach(data)
+
+
+```
+
+
+##Descriptive Statistics
+
+#background information
+```{r}
+#degree
+table(What.degree.are.you.currently.studying.for.)
+plot1 <-ggplot(data, aes(x=What.degree.are.you.currently.studying.for., fill=region)) + geom_bar() + labs(title="Degree")
+print(plot1)
+
+#language of instruction
+table(What.is.the.language.of.instruction.for.your.program.)
+plot2 <- ggplot(data, aes(x=What.is.the.language.of.instruction.for.your.program., fill=region)) + geom_bar() + labs(title="Language of instruction")
+print(plot2)
+
+#length of stay in Russia
+table(How.long.have.you.been.in.Russia.studying.for.your.current.program.)
+plot3 <- ggplot(data, aes(x=How.long.have.you.been.in.Russia.studying.for.your.current.program., fill=region)) + geom_bar() + labs(title="Length of stay in Russia")
+print(plot3)
+
+#financing status
+table(How.are.you.financing.your.participation.in.the.program.)
+plot4 <- ggplot(data, aes(x=How.are.you.financing.your.participation.in.the.program., fill=region)) + geom_bar() + labs(title="Financing Status")
+print(plot4)
+
+#ever been in Russia
+table(Have.you.ever.been.in.Russia.before.you.enrolled.for.your.current.program)
+plot5 <- ggplot(data, aes(x=Have.you.ever.been.in.Russia.before.you.enrolled.for.your.current.program, fill=region)) + geom_bar() + labs(title="Previous Stay in Russia")
+print(plot5)
+
+```
+
+#Demographic 
+```{r}
+#Gender
+table(Gender)
+ggplot(data, aes(x=Gender, fill=region)) + geom_bar() + labs(title="Gender")
+
+#Age
+table(age)
+ggplot(data, aes(x=age, fill=region)) + geom_bar() + labs(title="Age")
+
+#family status
+table(Family.status)
+ggplot(data, aes(x=Family.status, fill=region)) + geom_bar() + labs(title="Family status")
+
+#family income status
+table(What.was.your.annual.family.income.when.you.were.applying.to.study.abroad..estimate.in.US.dollars.)
+ggplot(data, aes(x=What.was.your.annual.family.income.when.you.were.applying.to.study.abroad..estimate.in.US.dollars., fill=region)) + geom_bar() + labs(title="Annual family income")
+
+```
+
+
+##Factors influencing the decision to study in Russia
+
+#push factors in Home country
+```{r}
+#unvailable program
+table(Unavailability.of.the.desired.study.program)
+plot6 <-ggplot(data, aes(x=Unavailability.of.the.desired.study.program, fill=region)) + geom_bar() + labs(title="Unavailable program")
+print(plot6)
+
+#low quality of education
+table(Low.quality.of.education)
+plot7 <-ggplot(data, aes(x=Low.quality.of.education, fill=region)) + geom_bar() + labs(title="Low quality of education")
+print(plot7)
+
+#competive Uni admission
+table(Competitive.university.admission.process..difficult.to.gain.admission.to.a.quality.local.institution)
+plot8 <-ggplot(data, aes(x=Competitive.university.admission.process..difficult.to.gain.admission.to.a.quality.local.institution, fill=region)) + geom_bar() + labs(title="Competitive University Admission")
+print(plot8)
+
+#advantage of international degree
+table(Perceived.advantage.of.international.degree.over.a.local.one.at.the.local.job.market)
+plot9 <-ggplot(data, aes(x=Perceived.advantage.of.international.degree.over.a.local.one.at.the.local.job.market, fill=region)) + geom_bar() + labs(title="Perceived advantage of internatioal degree")
+print(plot9)
+
+#unavailability of scholarship
+table(Unavailability.of.scholarship.opportunities)
+plot10 <-ggplot(data, aes(x=Unavailability.of.scholarship.opportunities, fill=region)) + geom_bar() + labs(title="Unavailability of scholarship")
+print(plot10)
+
+#encouragement from family
+table(Encouragement.from.my.family.to.study.abroad)
+plot11 <-ggplot(data, aes(x=Encouragement.from.my.family.to.study.abroad, fill=region)) + geom_bar() + labs(title="Encouragement from family")
+print(plot11)
+
+#encouragement from friends
+table(Encouragement.from..my.friends.to.study.abroad)
+plot12 <-ggplot(data, aes(x=Encouragement.from..my.friends.to.study.abroad, fill=region)) + geom_bar() + labs(title="Encouragement from friends")
+print(plot12)
+
+#earning prospects
+table(Better.earning.prospects.abroad)
+plot13 <-ggplot(data, aes(x=Better.earning.prospects.abroad, fill=region)) + geom_bar() + labs(title="Better earning prospects")
+print(plot13)
+
+#social prestige
+table(The.social.prestige.of.studying.abroad)
+plot14 <-ggplot(data, aes(x=The.social.prestige.of.studying.abroad , fill=region)) + geom_bar() + labs(title="The.social.prestige.of.studying.abroad")
+print(plot14)
+
+#experience different culture
+table(To.experience.a.different.culture)
+plot15 <-ggplot(data, aes(x=To.experience.a.different.culture, fill=region)) + geom_bar() + labs(title="EXperience different culture")
+print(plot15)
+
+```
+
+#pull factors in Russia
+```{r}
+#available program
+table(Availability.of.desired.study.program)
+plot16 <-ggplot(data, aes(x=Availability.of.desired.study.program, fill=region)) + geom_bar() + labs(title="Availability of desired study program")
+print(plot16)
+
+#high quality of education
+table(Higher.quality.of.education..compared.to.home.country.)
+plot17 <-ggplot(data, aes(x=Higher.quality.of.education..compared.to.home.country., fill=region)) + geom_bar() + labs(title="High quality of education")
+print(plot17)
+
+#low cost of living
+table(Low.cost.of.living)
+plot18 <-ggplot(data, aes(x=Low.cost.of.living, fill=region)) + geom_bar() + labs(title="Low cost of living")
+print(plot18)
+
+#low tuition fees
+table(Low.tuition.fees)
+plot19 <-ggplot(data, aes(x=Low.tuition.fees, fill=region)) + geom_bar() + labs(title="Low tuition fees")
+print(plot19)
+
+#scholarships
+table(Awarded.scholarships.or.tuition.waiver)
+plot20 <-ggplot(data, aes(x=Awarded.scholarships.or.tuition.waiver, fill=region)) + geom_bar() + labs(title="Scholarship or tuition waiver")
+print(plot20)
+
+#attraction to Russian culture
+table(Attraction.to.Russian.culture..society)
+plot21 <-ggplot(data, aes(x=Attraction.to.Russian.culture..society, fill=region)) + geom_bar() + labs(title="Attraction to Russian culture")
+print(plot21)
+
+#career prospects in Russia
+table(Career.prospects.in.Russia)
+plot22 <-ggplot(data, aes(x=Career.prospects.in.Russia, fill=region)) + geom_bar() + labs(title="Career prospects in Russia")
+print(plot22)
+
+#recommendations from family and friends
+table(Personal.recommendations.from.parents..relatives..and.friends)
+plot23 <-ggplot(data, aes(x=Personal.recommendations.from.parents..relatives..and.friends, fill=region)) + geom_bar() + labs(title="Recommendations from family and friends")
+print(plot23)
+
+#cultural proximity
+table(cultural.proximity.with.home)
+plot24 <-ggplot(data, aes(x=cultural.proximity.with.home, fill=region)) + geom_bar() + labs(title="Cultural proximity")
+print(plot24)
+
+#geographical proximity
+table(geographical.proximity.with.home)
+plot25 <-ggplot(data, aes(x=geographical.proximity.with.home, fill=region)) + geom_bar() + labs(title="Geograhical proximity")
+print(plot25)
+
+
+```
+
+#Pull Factors in HSE
+```{r}
+#quality and reputation
+table(Quality.and.reputation.of.the.University)
+plot26 <-ggplot(data, aes(x=Quality.and.reputation.of.the.University, fill=region)) + geom_bar() + labs(title="Quality and reputation of HSE")
+print(plot26)
+
+#recognition of degree
+table(Recognition.of.the.degree.in.my.home.country)
+plot27 <-ggplot(data, aes(x=Recognition.of.the.degree.in.my.home.country, fill=region)) + geom_bar() + labs(title="Recognition of degree")
+print(plot27)
+
+#quality of teachers
+table(Quality.of.the.teaching.staff)
+plot28 <-ggplot(data, aes(x=Quality.of.the.teaching.staff, fill=region)) + geom_bar() + labs(title="Quality of teachers")
+print(plot28)
+
+#reputation of alumni
+table(The.reputation.of.the.alumni)
+plot29 <-ggplot(data, aes(x=The.reputation.of.the.alumni, fill=region)) + geom_bar() + labs(title="Reputation of alumni")
+print(plot29)
+
+#reputation of international community
+table(The.reputation.of.the.international.community)
+plot30 <-ggplot(data, aes(x=The.reputation.of.the.international.community, fill=region)) + geom_bar() + labs(title="Reputation of the international community")
+print(plot30)
+
+#HSE rank
+table(HSE.position.in.international.university.rankings)
+plot31 <-ggplot(data, aes(x=HSE.position.in.international.university.rankings, fill=region)) + geom_bar() + labs(title="HSE's rank")
+print(plot31)
+
+#cost of tuition
+table(Cost.of.tuition.for.international.students)
+plot32 <-ggplot(data, aes(x=Cost.of.tuition.for.international.students, fill=region)) + geom_bar() + labs(title="Cost of tuition")
+print(plot32)
+
+#availability of scholarships
+table(Availability.of.scholarships)
+plot33 <-ggplot(data, aes(x=Availability.of.scholarships, fill=region)) + geom_bar() + labs(title="Availability of scholarships")
+print(plot33)
+
+#support for international students
+table(Support.services.for.international.students)
+plot34 <-ggplot(data, aes(x=Support.services.for.international.students, fill=region)) + geom_bar() + labs(title="Support services for international students")
+print(plot34)
+
+#graduate employment
+table(Graduates.employment.rates)
+plot35 <-ggplot(data, aes(x=Graduates.employment.rates, fill=region)) + geom_bar() + labs(title="Graduate employment")
+print(plot35)
+
+#HSE alliances
+table(HSE.s.international.strategic.alliances)
+plot36 <-ggplot(data, aes(x=HSE.s.international.strategic.alliances, fill=region)) + geom_bar() + labs(title="HSE alliances")
+print(plot36)
+
+#local preference for HSE degree
+table(Local.employers.preference.of..degrees.awarded.by.HSE)
+plot37 <-ggplot(data, aes(x=Local.employers.preference.of..degrees.awarded.by.HSE, fill=region)) + geom_bar() + labs(title="Local preference for HSE degrees")
+print(plot37)
+
+```
+
+
+##Regression for factors influencing the decision to move to Russia
+
+#Push Factors
+
+empty model
+```{r}
+model0<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~1, data = data)
+summary(model0)
+
+```
+
+
+Model 1 (for the entire data)
+```{r}
+model1<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~Unavailability.of.the.desired.study.program+Low.quality.of.education+ Competitive.university.admission.process..difficult.to.gain.admission.to.a.quality.local.institution+ Perceived.advantage.of.international.degree.over.a.local.one.at.the.local.job.market+ Unavailability.of.scholarship.opportunities+ Encouragement.from.my.family.to.study.abroad+ Encouragement.from..my.friends.to.study.abroad+ Better.earning.prospects.abroad+ The.social.prestige.of.studying.abroad+ To.experience.a.different.culture, data = data)
+
+summary(model1)
+```
+
+
+Model 2 (for Africa)
+```{r}
+model2<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~Unavailability.of.the.desired.study.program+Low.quality.of.education+ Competitive.university.admission.process..difficult.to.gain.admission.to.a.quality.local.institution+ Perceived.advantage.of.international.degree.over.a.local.one.at.the.local.job.market+ Unavailability.of.scholarship.opportunities+ Encouragement.from.my.family.to.study.abroad+ Encouragement.from..my.friends.to.study.abroad+ Better.earning.prospects.abroad+ The.social.prestige.of.studying.abroad+ To.experience.a.different.culture+as.numeric(age)+Gender, data = subset(data, region=="Africa"))
+
+summary(model2)
+
+```
+
+
+Model 3 (for Eastern ASia)
+```{r}
+model3<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~Unavailability.of.the.desired.study.program+Low.quality.of.education+ Competitive.university.admission.process..difficult.to.gain.admission.to.a.quality.local.institution+ Perceived.advantage.of.international.degree.over.a.local.one.at.the.local.job.market+ Unavailability.of.scholarship.opportunities+ Encouragement.from.my.family.to.study.abroad+ Encouragement.from..my.friends.to.study.abroad+ Better.earning.prospects.abroad+ The.social.prestige.of.studying.abroad+ To.experience.a.different.culture+as.numeric(age)+Gender, data = subset(data, region=="Eastern Asia"))
+
+summary(model3)
+```
+
+
+Model 4 (for Europe, USA & Australia)
+```{r}
+model4<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~Unavailability.of.the.desired.study.program+Low.quality.of.education+ Competitive.university.admission.process..difficult.to.gain.admission.to.a.quality.local.institution+ Perceived.advantage.of.international.degree.over.a.local.one.at.the.local.job.market+ Unavailability.of.scholarship.opportunities+ Encouragement.from.my.family.to.study.abroad+ Encouragement.from..my.friends.to.study.abroad+ Better.earning.prospects.abroad+ The.social.prestige.of.studying.abroad+ To.experience.a.different.culture+as.numeric(age)+Gender, data = subset(data, region=="Europe, USA & Australia"))
+
+summary(model4)
+
+```
+
+
+Model 5 (Former Soviet Republics)
+```{r}
+model5<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~Unavailability.of.the.desired.study.program+Low.quality.of.education+ Competitive.university.admission.process..difficult.to.gain.admission.to.a.quality.local.institution+ Perceived.advantage.of.international.degree.over.a.local.one.at.the.local.job.market+ Unavailability.of.scholarship.opportunities+ Encouragement.from.my.family.to.study.abroad+ Encouragement.from..my.friends.to.study.abroad+ Better.earning.prospects.abroad+ The.social.prestige.of.studying.abroad+ To.experience.a.different.culture+as.numeric(age)+Gender, data = subset(data, region=="Former Soviet Republics"))
+
+summary(model5)
+```
+
+
+Model 6 (Middle East)
+```{r}
+model6<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~Unavailability.of.the.desired.study.program+Low.quality.of.education+ Competitive.university.admission.process..difficult.to.gain.admission.to.a.quality.local.institution+ Perceived.advantage.of.international.degree.over.a.local.one.at.the.local.job.market+ Unavailability.of.scholarship.opportunities+ Encouragement.from.my.family.to.study.abroad+ Encouragement.from..my.friends.to.study.abroad+ Better.earning.prospects.abroad+ The.social.prestige.of.studying.abroad+ To.experience.a.different.culture+as.numeric(age)+Gender, data = subset(data, region=="Middle East"))
+
+summary(model6)
+```
+
+
+Model 7 (Southern America)
+```{r}
+model7<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~Unavailability.of.the.desired.study.program+Low.quality.of.education+ Competitive.university.admission.process..difficult.to.gain.admission.to.a.quality.local.institution+ Perceived.advantage.of.international.degree.over.a.local.one.at.the.local.job.market+ Unavailability.of.scholarship.opportunities+ Encouragement.from.my.family.to.study.abroad+ Encouragement.from..my.friends.to.study.abroad+ Better.earning.prospects.abroad+ The.social.prestige.of.studying.abroad+ To.experience.a.different.culture, data = subset(data, region=="Southern America"))
+
+summary(model7)
+
+
+```
+
+
+Model 8 (Southern Asia)
+```{r}
+model8<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~Unavailability.of.the.desired.study.program+Low.quality.of.education+ Competitive.university.admission.process..difficult.to.gain.admission.to.a.quality.local.institution+ Perceived.advantage.of.international.degree.over.a.local.one.at.the.local.job.market+ Unavailability.of.scholarship.opportunities+ Encouragement.from.my.family.to.study.abroad+ Encouragement.from..my.friends.to.study.abroad+ Better.earning.prospects.abroad+ The.social.prestige.of.studying.abroad+ To.experience.a.different.culture+as.numeric(age)+Gender, data = subset(data, region=="Southern Asia"))
+
+summary(model8)
+
+table(region)
+```
+
+
+Model 9 (Southern Eastern Asia)
+```{r}
+model9<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~Unavailability.of.the.desired.study.program+Low.quality.of.education+ Competitive.university.admission.process..difficult.to.gain.admission.to.a.quality.local.institution+ Perceived.advantage.of.international.degree.over.a.local.one.at.the.local.job.market+ Unavailability.of.scholarship.opportunities+ Encouragement.from.my.family.to.study.abroad+ Encouragement.from..my.friends.to.study.abroad+ Better.earning.prospects.abroad+ The.social.prestige.of.studying.abroad+ To.experience.a.different.culture+as.numeric(age)+Gender, data = subset(data, region=="Southern Eastern Asia"))
+
+summary(model9)
+
+```
+
+
+#Pull Factors
+
+Pull Factors in Russia
+```{r}
+
+model10<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~Availability.of.desired.study.program+Higher.quality.of.education..compared.to.home.country.+Low.cost.of.living+Low.tuition.fees+Awarded.scholarships.or.tuition.waiver+Attraction.to.Russian.culture..society+Career.prospects.in.Russia+Personal.recommendations.from.parents..relatives..and.friends+cultural.proximity.with.home+geographical.proximity.with.home, data=data)
+
+summary(model10)
+```
+
+
+Pull Factors in HSE
+```{r}
+
+model11<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~Quality.and.reputation.of.the.University+Recognition.of.the.degree.in.my.home.country+Quality.of.the.teaching.staff+The.reputation.of.the.alumni+The.reputation.of.the.international.community+HSE.position.in.international.university.rankings+Cost.of.tuition.for.international.students+Availability.of.scholarships+Support.services.for.international.students+Graduates.employment.rates+HSE.s.international.strategic.alliances+Local.employers.preference.of..degrees.awarded.by.HSE, data = data)
+
+summary(model11)
+```
+
+Pull factors (Both Russia and HSE)
+```{r}
+model12<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~Availability.of.desired.study.program+Higher.quality.of.education..compared.to.home.country.+Low.cost.of.living+Low.tuition.fees+Awarded.scholarships.or.tuition.waiver+Attraction.to.Russian.culture..society+Career.prospects.in.Russia+Personal.recommendations.from.parents..relatives..and.friends+cultural.proximity.with.home+geographical.proximity.with.home+Quality.and.reputation.of.the.University+Recognition.of.the.degree.in.my.home.country+Quality.of.the.teaching.staff+The.reputation.of.the.alumni+The.reputation.of.the.international.community+HSE.position.in.international.university.rankings+Cost.of.tuition.for.international.students+Availability.of.scholarships+Support.services.for.international.students+Graduates.employment.rates+HSE.s.international.strategic.alliances+Local.employers.preference.of..degrees.awarded.by.HSE, data=data)
+
+summary(model12)
+```
+
+
+Model 13 (for Africa)
+```{r}
+model13<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~Availability.of.desired.study.program+Higher.quality.of.education..compared.to.home.country.+Low.cost.of.living+Low.tuition.fees+Awarded.scholarships.or.tuition.waiver+Attraction.to.Russian.culture..society+Career.prospects.in.Russia+Personal.recommendations.from.parents..relatives..and.friends+cultural.proximity.with.home+geographical.proximity.with.home+Quality.and.reputation.of.the.University+Recognition.of.the.degree.in.my.home.country+Quality.of.the.teaching.staff+The.reputation.of.the.alumni+The.reputation.of.the.international.community+HSE.position.in.international.university.rankings+Cost.of.tuition.for.international.students+Availability.of.scholarships+Support.services.for.international.students+Graduates.employment.rates+HSE.s.international.strategic.alliances+Local.employers.preference.of..degrees.awarded.by.HSE+as.numeric(age)+Gender, data = subset(data, region=="Africa"))
+
+summary(model13)
+
+```
+
+
+Model 14 (for Eastern ASia)
+```{r}
+model14<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~Availability.of.desired.study.program+Higher.quality.of.education..compared.to.home.country.+Low.cost.of.living+Low.tuition.fees+Awarded.scholarships.or.tuition.waiver+Attraction.to.Russian.culture..society+Career.prospects.in.Russia+Personal.recommendations.from.parents..relatives..and.friends+cultural.proximity.with.home+geographical.proximity.with.home+Quality.and.reputation.of.the.University+Recognition.of.the.degree.in.my.home.country+Quality.of.the.teaching.staff+The.reputation.of.the.alumni+The.reputation.of.the.international.community+HSE.position.in.international.university.rankings+Cost.of.tuition.for.international.students+Availability.of.scholarships+Support.services.for.international.students+Graduates.employment.rates+HSE.s.international.strategic.alliances+Local.employers.preference.of..degrees.awarded.by.HSE+as.numeric(age)+Gender, data = subset(data, region=="Eastern Asia"))
+
+summary(model14)
+```
+
+
+Model 15 (for Europe, USA & Australia)
+```{r}
+model15<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~Availability.of.desired.study.program+Higher.quality.of.education..compared.to.home.country.+Low.cost.of.living+Low.tuition.fees+Awarded.scholarships.or.tuition.waiver+Attraction.to.Russian.culture..society+Career.prospects.in.Russia+Personal.recommendations.from.parents..relatives..and.friends+cultural.proximity.with.home+geographical.proximity.with.home+Quality.and.reputation.of.the.University+Recognition.of.the.degree.in.my.home.country+Quality.of.the.teaching.staff+The.reputation.of.the.alumni+The.reputation.of.the.international.community+HSE.position.in.international.university.rankings+Cost.of.tuition.for.international.students+Availability.of.scholarships+Support.services.for.international.students+Graduates.employment.rates+HSE.s.international.strategic.alliances+Local.employers.preference.of..degrees.awarded.by.HSE+as.numeric(age)+Gender, data = subset(data, region=="Europe, USA & Australia"))
+
+summary(model15)
+
+```
+
+
+Model 16 (Former Soviet Republics)
+```{r}
+model16<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~Availability.of.desired.study.program+Higher.quality.of.education..compared.to.home.country.+Low.cost.of.living+Low.tuition.fees+Awarded.scholarships.or.tuition.waiver+Attraction.to.Russian.culture..society+Career.prospects.in.Russia+Personal.recommendations.from.parents..relatives..and.friends+cultural.proximity.with.home+geographical.proximity.with.home+Quality.and.reputation.of.the.University+Recognition.of.the.degree.in.my.home.country+Quality.of.the.teaching.staff+The.reputation.of.the.alumni+The.reputation.of.the.international.community+HSE.position.in.international.university.rankings+Cost.of.tuition.for.international.students+Availability.of.scholarships+Support.services.for.international.students+Graduates.employment.rates+HSE.s.international.strategic.alliances+Local.employers.preference.of..degrees.awarded.by.HSE, data = subset(data, region=="Former Soviet Republics"))
+
+summary(model16)
+
+```
+
+
+Model 17 (Middle East)
+```{r}
+model17<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~Availability.of.desired.study.program+Higher.quality.of.education..compared.to.home.country.+Low.cost.of.living+Low.tuition.fees+Awarded.scholarships.or.tuition.waiver+Attraction.to.Russian.culture..society+Career.prospects.in.Russia+Personal.recommendations.from.parents..relatives..and.friends+cultural.proximity.with.home+geographical.proximity.with.home+Quality.and.reputation.of.the.University+Recognition.of.the.degree.in.my.home.country+Quality.of.the.teaching.staff+The.reputation.of.the.alumni+The.reputation.of.the.international.community+HSE.position.in.international.university.rankings+Cost.of.tuition.for.international.students+Availability.of.scholarships+Support.services.for.international.students+Graduates.employment.rates+HSE.s.international.strategic.alliances+Local.employers.preference.of..degrees.awarded.by.HSE, data = subset(data, region=="Middle East"))
+
+summary(model17)
+```
+
+
+Model 18 (Southern America)
+```{r}
+model18<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~Availability.of.desired.study.program+Higher.quality.of.education..compared.to.home.country.+Low.cost.of.living+Low.tuition.fees+Awarded.scholarships.or.tuition.waiver+Attraction.to.Russian.culture..society+Career.prospects.in.Russia+Personal.recommendations.from.parents..relatives..and.friends+cultural.proximity.with.home+geographical.proximity.with.home+Quality.and.reputation.of.the.University+Recognition.of.the.degree.in.my.home.country+Quality.of.the.teaching.staff+The.reputation.of.the.alumni+The.reputation.of.the.international.community+HSE.position.in.international.university.rankings+Cost.of.tuition.for.international.students+Availability.of.scholarships+Support.services.for.international.students+Graduates.employment.rates+HSE.s.international.strategic.alliances+Local.employers.preference.of..degrees.awarded.by.HSE, data = subset(data, region=="Southern America"))
+
+summary(model18)
+
+
+```
+
+
+Model 19 (Southern Asia)
+```{r}
+model19<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~Unavailability.of.the.desired.study.program+Low.quality.of.education+ Competitive.university.admission.process..difficult.to.gain.admission.to.a.quality.local.institution+ Perceived.advantage.of.international.degree.over.a.local.one.at.the.local.job.market+ Unavailability.of.scholarship.opportunities+ Encouragement.from.my.family.to.study.abroad+ Encouragement.from..my.friends.to.study.abroad+ Better.earning.prospects.abroad+ The.social.prestige.of.studying.abroad+ To.experience.a.different.culture+as.numeric(age)+Gender, data = subset(data, region=="Southern Asia"))
+
+summary(model19)
+
+table(region)
+```
+
+
+Model 20 (Southern Eastern Asia)
+```{r}
+model9<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~Unavailability.of.the.desired.study.program+Low.quality.of.education+ Competitive.university.admission.process..difficult.to.gain.admission.to.a.quality.local.institution+ Perceived.advantage.of.international.degree.over.a.local.one.at.the.local.job.market+ Unavailability.of.scholarship.opportunities+ Encouragement.from.my.family.to.study.abroad+ Encouragement.from..my.friends.to.study.abroad+ Better.earning.prospects.abroad+ The.social.prestige.of.studying.abroad+ To.experience.a.different.culture+as.numeric(age)+Gender, data = subset(data, region=="Southern Eastern Asia"))
+
+summary(model20)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##Post graduation migration plans
+
+#graduation plans
+```{r}
+table(What.are.your.plans.after.graduation.)
+
+```
+
+#staying in Russia
+```{r}
+
+table(What.will.be.your.reason.for.staying.in.Russia.after.graduation.)
+```
+
+Reason for staying in Russia
+```{r}
+#job opportunities
+table(Better.job.opportunities..in.comparison.with.home.country.)
+
+#quality of life
+table(Higher.quality.of.life..in.comparison.with.home.country.)
+
+#career opportunities
+table(Better.career.opportunities.and.advancement.in.chosen.profession)
+
+#income level
+table(Higher.income.level)
+
+#ties to family and friends
+table(Ties.to.family.and.friends)
+
+#international experience
+table(Gain.international.experience)
+
+#Indicate.any.other.factor.that.has.influenced.your.plan.to.stay.in.Russia.after.graduation
+```
+
+Reasons for not returning home but stay in Russia
+```{r}
+#family expectations
+table(Family.expectations)
+
+#cultural practices
+table(Restrictive.cultural.practices..eg..pressure.to.marry.)
+
+#limited job opportunitiesin Home country
+table(Limited.job.opportunities.in.home.country)
+
+#income levels
+table(Lower.income.levels)
+
+#quality of life
+table(Lower.quality.of.life.2)
+
+#political persecution
+table(Political.persecution)
+
+#danger to one's life
+table(Danger.or.fear.for.one.s.own.life)
+
+#Indicate.any.other.factor.that.influenced.your.plan.not.to.return.home.after.graduation
+
+```
+
+
+#returning home
+```{r}
+
+table(What.will.be.your.reason.for.returning.home.after.graduation.)
+```
+
+Reasons for Leaving Russia to Return Home
+```{r}
+#feeling of alienation
+table(Feelings.of.alienation.from.the.Russian.culture.and.population)
+
+#finding jobs
+table(Difficulties.in.finding.a.job)
+
+#working conditions
+table(Poor.working.conditions)
+
+#quality of life
+table(Lower.quality.of.life)
+
+#discrimination
+table(Perceived.or.experienced.discrimination)
+
+#crime and safety level
+table(Crime.and.low.level.of.safety)
+
+#immigration process
+table(Strict.migration.process.difficulties.in.getting.visas.)
+
+#Indicate.any.other.factor.that.has.influenced.your.plan.to.leave.Russia.after.graduation
+```
+
+Reasons for returning home
+```{r}
+#professional opportunites in HC
+table(Better.professional.opportunities.in.home.country)
+
+#quality of living in HC
+table(Better.quality.of.living.in.home.country)
+
+#feeling comfortable at home
+table(Feeling.more.comfortable.at.home)
+
+#income levels
+table(Higher.income.levels)
+
+#family ties in HC
+table(Family.ties.back.home)
+
+#Indicate.any.other.factor.that.has.influenced.your.plan.to.return.home.after.graduation
+
+```
+
+
+#moving to another country
+```{r}
+table(What.will.be.your.reason.for.moving.to.another.country.after.graduation.)
+
+#another country
+#table(What.country..or.countries..are.you.considering.migrating.to.)
+```
+
+
+Reasons for Leaving Russia to move to another country
+```{r}
+#feeling of aliention 
+table(Feelings.of.alienation.from.the.Russian.culture.and.population.1)
+
+#finding jobs 
+table(Difficulties.in.finding.a.job.1)
+
+#working conditions 
+table(Poor.working.conditions.1)
+
+#discrimination 
+table(Perceived.or.experienced.discrimination.1)
+
+#crime and safetly level 
+table(Crime.and.low.level.of.safety.1)
+
+#immigration process 
+table(Strict.migration.process.difficulties.in.getting.visas..1)
+
+#Indicate.any.other.factor.that.has.influenced.your.plan.to.leave.Russia.after.graduation.1
+
+```
+
+
+Reasons for not returning home but move to another country
+```{r}
+#family expectations 
+table(Family.expectations.1)
+
+#cultural practices 
+table(Restrictive.cultural.practices..eg..pressure.to.marry..1)
+
+#limited job opportunities 
+table(Limited.job.opportunities.in.home.country.1)
+
+#income levels
+table(Lower.income.levels.1)
+
+#quality of life
+table(Lower.quality.of.life.3)
+
+#political persecution
+table(Political.persecution.1)
+
+#danger to one's life
+table(Danger.or.fear.for.one.s.own.life.1)
+
+#Indicate.any.other.factor.that.influenced.your.plan.not.to.return.home.after.graduation.1
+```
+
+Reasons for moving to another country
+```{r}
+#job opportunities
+table(Better.job.opportunities)
+
+#quality of life
+table(Higher.quality.of.life)
+
+#career opportunities
+table(Better.career.opportunities.and.advancement.in.chosen.profession.1)
+
+#income levels
+table(Higher.income.levels.1)
+
+#ties to family and friends
+table(Ties.to.family.and.friends.1)
+
+#international experience
+table(Gain.international.experience.1)
+
+#immigration process
+table(Flexible.immigration.process)
+
+#Indicate.any.other.factor.that.has.influenced.your.plan.to.move.to.another.country.after.graduation
+```
+
+
+
+#Regression for factors influencing the decision to move to Russia
+
+Push Factors
+```{r}
+
+model1<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~Unavailability.of.the.desired.study.program+Low.quality.of.education+ Competitive.university.admission.process..difficult.to.gain.admission.to.a.quality.local.institution+ Perceived.advantage.of.international.degree.over.a.local.one.at.the.local.job.market+ Unavailability.of.scholarship.opportunities+ Encouragement.from.my.family.to.study.abroad+ Encouragement.from..my.friends.to.study.abroad+ Better.earning.prospects.abroad+ The.social.prestige.of.studying.abroad+ To.experience.a.different.culture, data = data)
+
+summary(model1)
+```
+
+Pull Factors in Russia
+```{r}
+
+model2<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~Availability.of.desired.study.program+Higher.quality.of.education..compared.to.home.country.+Low.cost.of.living+Low.tuition.fees+Awarded.scholarships.or.tuition.waiver+Attraction.to.Russian.culture..society+Career.prospects.in.Russia+Personal.recommendations.from.parents..relatives..and.friends+cultural.proximity.with.home+geographical.proximity.with.home, data=data)
+
+summary(model2)
+```
+
+
+Pull Factors in HSE
+```{r}
+
+model3<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~Quality.and.reputation.of.the.University+Recognition.of.the.degree.in.my.home.country+Quality.of.the.teaching.staff+The.reputation.of.the.alumni+The.reputation.of.the.international.community+HSE.position.in.international.university.rankings+Cost.of.tuition.for.international.students+Availability.of.scholarships+Support.services.for.international.students+Graduates.employment.rates+HSE.s.international.strategic.alliances+Local.employers.preference.of..degrees.awarded.by.HSE, data = data)
+
+summary(model3)
+```
+
+Multilevel 
+```{r}
+library(psych)
+library(lmtest)
+library(car)
+library(foreign)
+library(lme4)
+library(sjPlot)
+library(ggplot2)
+library(ggrepel)
+library(influence.ME)
+library(mitml)
+library(ICC)
+
+  
+```
+
+
+
+```{r}
+model4a<-lmerTest::lmer(as.numeric(What.degree.are.you.currently.studying.for.)~(1 | Home.country), REML = FALSE, data = data)
+
+summary(model4a)
+summary(model4a)
+
+ICCbare(Home.country, as.numeric(What.degree.are.you.currently.studying.for.), data)
+
+
+plot_model(model4a, type = "re", sort.est = "sort.all", grid = F)
+```
+
+
+```{r}
+model5a <- lmerTest::lmer(as.numeric(What.degree.are.you.currently.studying.for.)~Unavailability.of.the.desired.study.program+Low.quality.of.education+ Competitive.university.admission.process..difficult.to.gain.admission.to.a.quality.local.institution+ Perceived.advantage.of.international.degree.over.a.local.one.at.the.local.job.market+ Unavailability.of.scholarship.opportunities+ Encouragement.from.my.family.to.study.abroad+ Encouragement.from..my.friends.to.study.abroad+ Better.earning.prospects.abroad+ The.social.prestige.of.studying.abroad+ To.experience.a.different.culture+(1 | Home.country), REML = FALSE, data = data)
+
+summary(model5a)
+```
+
+
+
+```{r}
+
+model7<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~Unavailability.of.the.desired.study.program+Low.quality.of.education+ Competitive.university.admission.process..difficult.to.gain.admission.to.a.quality.local.institution+ Perceived.advantage.of.international.degree.over.a.local.one.at.the.local.job.market+ Unavailability.of.scholarship.opportunities+ Encouragement.from.my.family.to.study.abroad+ Encouragement.from..my.friends.to.study.abroad+ Better.earning.prospects.abroad+ The.social.prestige.of.studying.abroad+ To.experience.a.different.culture+as.numeric(age)+Gender, data = subset(data, region=="Africa"))
+
+summary(model7)
+```
+
+
+
+```{r}
+model8<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~Unavailability.of.the.desired.study.program+Low.quality.of.education+ Competitive.university.admission.process..difficult.to.gain.admission.to.a.quality.local.institution+ Perceived.advantage.of.international.degree.over.a.local.one.at.the.local.job.market+ Unavailability.of.scholarship.opportunities+ Encouragement.from.my.family.to.study.abroad+ Encouragement.from..my.friends.to.study.abroad+ Better.earning.prospects.abroad+ The.social.prestige.of.studying.abroad+ To.experience.a.different.culture, data = subset(data, region=="Former Soviet Republics"))
+
+summary(model8)
+```
+
+
+
+

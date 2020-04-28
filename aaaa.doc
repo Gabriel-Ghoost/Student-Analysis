@@ -1,0 +1,25 @@
+
+Regression Results: Push Factors in Home Country
+==================================================================================
+                                                       Dependent variable:        
+                                               -----------------------------------
+                                                         Move to Moscow           
+                                                      (1)               (2)       
+----------------------------------------------------------------------------------
+Constant                                         0.067 (0.497)   3.852*** (0.911) 
+Encouragement from family and friends            0.036 (0.106)    -0.015 (0.124)  
+Advantages of studying abroad                  0.376*** (0.123)    0.199 (0.138)  
+Access to education                             0.275** (0.111)  0.359*** (0.129) 
+Competitive university admission process       0.252*** (0.093)   0.227** (0.105) 
+Perceived advantage of an international degree -0.298*** (0.107)  -0.197 (0.120)  
+Unavailability of scholarship opportunities    -0.197** (0.090)   -0.147 (0.104)  
+Experience a different culture                 -0.322*** (0.083) -0.191** (0.096) 
+Age                                                              -1.205*** (0.206)
+Home Country                                                     -1.015*** (0.253)
+Gender                                                           0.017*** (0.006) 
+----------------------------------------------------------------------------------
+Observations                                          406               394       
+Log Likelihood                                     -241.219          -193.213     
+Akaike Inf. Crit.                                   498.439           408.427     
+==================================================================================
+Note:                                                  *p<0.1; **p<0.05; ***p<0.01

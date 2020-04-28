@@ -1,0 +1,1738 @@
+---
+title: "Data Analysis"
+author: "Gabriel"
+date: "March 18, 2020"
+output:
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r include=FALSE}
+#defining the working directory
+getwd()
+setwd("C:/Users/GHOOST/Desktop/New Lit/data")
+```
+
+
+```{r include=FALSE}
+#attaching the packages
+library(car)
+library(foreign)
+library(ggplot2)
+library(summarytools)
+library(knitr)
+library(gridExtra)
+library(kableExtra)
+library(stargazer)
+```
+
+
+```{r include=FALSE}
+#attaching the data
+
+data<-read.csv("International Students Survey.csv")
+
+attach(data)
+```
+
+
+```{r include=FALSE}
+#Data preparation
+#Age
+table(Age)
+
+summary(as.numeric(Age))
+
+data$age<-recode(as.numeric(Age),"17:21=1; 22:26=2;27:hi=3")
+
+table(data$age)
+
+data$age<-factor(data$age,lab=c("17 to 21 yrs", "22 to 26 yrs", " 27 yrs and older")) 
+
+```
+
+
+
+```{r include=FALSE}
+#country regions
+data$region[data$Home.country == 'Algeria'| 
+    data$Home.country == 'Botswana'| data$Home.country == 'Cameroon'|
+    data$Home.country == 'Chad'| data$Home.country == 'Congo'|
+    data$Home.country == 'DR Congo'|data$Home.country == 'Eritrea'|
+    data$Home.country == 'Ivory Coast'|
+    data$Home.country == 'Gambia'|data$Home.country == 'Ghana'|
+    data$Home.country == 'Kenya'|data$Home.country == 'Madagascar'|
+    data$Home.country == 'Niger'|data$Home.country == 'Nigeria'|
+    data$Home.country == 'South Africa'|data$Home.country == 'Sudan'|
+    data$Home.country == 'Uganda'|data$Home.country == 'Zambia'] <- 'Africa'
+
+
+data$region[data$Home.country == 'Australia'| data$Home.country == 'Austria'| 
+    data$Home.country == 'Bosnia and Herzegovina'|
+    data$Home.country == 'Bulgaria'| data$Home.country == 'Europe'|
+    data$Home.country == 'France'| data$Home.country == 'Germany'|
+    data$Home.country == 'Italy'|data$Home.country == 'Poland'|
+    data$Home.country == 'Portugal'|data$Home.country == 'Serbia'|
+    data$Home.country == 'Spain'|data$Home.country == 'Switzerland'|
+    data$Home.country == 'Republic of North Macedonia'|
+    data$Home.country == 'USA'] <- 'Europe, USA & Australia'
+
+
+data$region[data$Home.country == 'Armenia'| 
+    data$Home.country == 'Azerbaijan'|data$Home.country == 'Belarus'|
+    data$Home.country == 'Estonia'|data$Home.country == 'Georgia'|
+    data$Home.country == 'Georgia'|data$Home.country == 'Kazakhstan'|
+    data$Home.country == 'Kyrgyzstan'|data$Home.country == 'Latvia'|
+    data$Home.country == 'Moldova'|data$Home.country == 'Tajikistan'|
+    data$Home.country == 'Turkmenistan'|data$Home.country == 'Ukraine'|
+    data$Home.country == 'Uzbekistan'] <- 'Former Soviet Republics'
+
+
+data$region[data$Home.country == 'Bahrain'| 
+    data$Home.country == 'Egypt'| data$Home.country == 'Iran'|
+    data$Home.country == 'Israel'| data$Home.country == 'Lebanon'|
+    data$Home.country == 'Syria'| 
+    data$Home.country == 'Turkey'] <- 'Middle East'
+
+
+data$region[data$Home.country == 'Bangladesh'| 
+    data$Home.country == 'India'| data$Home.country == 'Nepal'|
+    data$Home.country == 'Pakistan'| 
+    data$Home.country == 'Sri Lanka'] <- 'Southern Asia'
+
+data$region[data$Home.country == 'Brazil'| 
+    data$Home.country == 'Colombia'|data$Home.country == 'Ecuador'|
+    data$Home.country == 'Guatemala'| data$Home.country == 'Haiti'|
+    data$Home.country == 'Mexico'|
+    data$Home.country == 'Nicaragua'] <- 'Southern America'
+
+data$region[data$Home.country == 'China'| 
+    data$Home.country == 'Japan'|data$Home.country == 'Mongolia'| 
+    data$Home.country == 'South Korea'|data$Home.country == 'Hong Kong'|
+    data$Home.country == 'Taiwan'] <- 'Eastern Asia'
+
+data$region[data$Home.country == 'Indonesia'|
+    data$Home.country == 'Philippines'|data$Home.country == 'Thailand'|
+    data$Home.country == 'Vietnam'] <- 'Southern Eastern Asia'
+
+table(data$region, useNA = "ifany")
+
+attach(data)
+
+```
+
+
+##Data Analysis
+
+This section presents a description of the demographic information of the respondents. 
+
+#Demographic information
+
+#Degree
+```{r echo=FALSE}
+#degree
+
+freq(What.degree.are.you.currently.studying.for., display.type = F)
+
+ggplot(data, aes(x=What.degree.are.you.currently.studying.for., fill=region)) + geom_bar() + labs(title="Degree")
+
+```
+The table presents the shares of respondents pursuing their degrees. It shows that 58% of the respondents are pursuing their masters studies, 41% whilst 1% are in their preparatory year. 
+The plot presents the level of education of respondents with reference to their region of origin. It can be seen that majority of students are from Former Soviet Republics.  
+
+
+#Language of instruction
+```{r echo=FALSE}
+#language of instruction
+freq(What.is.the.language.of.instruction.for.your.program., display.type = F)
+
+ggplot(data, aes(x=What.is.the.language.of.instruction.for.your.program., fill=region)) + geom_bar() + labs(title="Language of instruction")
+
+```
+The table presents the shares of the language of instruction for the programs respondents are studying. Majority of the respondents 61% are taking programs in Russian whilst 39% are studying in English programs. The plot shows that students from Africa dominate students taking the English programs whilst students from the former Soviet Republics are in the majority for respondents taking Russian programs.  
+
+
+#Gender
+```{r echo=FALSE}
+#Gender
+freq(Gender, display.type = F)
+
+ggplot(data, aes(x=Gender, fill=region)) + geom_bar() + labs(title="Gender")
+
+```
+The table reports that 52% of the respondents are females whilst 47% are males. the plots presents the gender distribution across the regions.
+
+
+#Age
+```{r echo=FALSE}
+#Age
+freq(age, display.type = F)
+
+ggplot(data, aes(x=age, fill=region)) + geom_bar() + labs(title="Age")
+
+```
+The table reports that 48% of the respondents are within the age range (22 to 26 yrs), 35% are within the age range (17 to 21 yrs) and 18% are within the age cohort of 27 yrs and older. The plot presents the age distribution across the regions.
+
+
+```{r include=FALSE}
+
+#unavailable program
+unavailable.program <-as.factor(Unavailability.of.the.desired.study.program)
+unavailable.program <- factor(unavailable.program,levels = c(1,2,3,4,5),
+                             labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(unavailable.program, Unavailability.of.the.desired.study.program)
+
+#quality of education
+low.educational.quality<-as.factor(Low.quality.of.education)
+low.educational.quality <- factor(low.educational.quality,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(low.educational.quality, Low.quality.of.education)
+
+#competitive University admission in home country
+competitive.admission<-as.factor(Competitive.university.admission.process..difficult.to.gain.admission.to.a.quality.local.institution)
+competitive.admission <- factor(competitive.admission,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(competitive.admission, Competitive.university.admission.process..difficult.to.gain.admission.to.a.quality.local.institution)
+
+#Advantage of international degree
+advantage.of.international.degree<-as.factor(Perceived.advantage.of.international.degree.over.a.local.one.at.the.local.job.market)
+advantage.of.international.degree <- factor(advantage.of.international.degree,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(advantage.of.international.degree, Perceived.advantage.of.international.degree.over.a.local.one.at.the.local.job.market)
+
+#unavailability of scholarships
+unavailability.of.scholarship<-as.factor(Unavailability.of.scholarship.opportunities)
+unavailability.of.scholarship <- factor(unavailability.of.scholarship,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(unavailability.of.scholarship, Unavailability.of.scholarship.opportunities)
+
+#encouragement from family
+encouragement.from.family<-as.factor(Encouragement.from.my.family.to.study.abroad)
+encouragement.from.family <- factor(encouragement.from.family,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(encouragement.from.family, Encouragement.from.my.family.to.study.abroad)
+
+#encouragement from friends
+encouragement.from.friends<-as.factor(Encouragement.from..my.friends.to.study.abroad)
+encouragement.from.friends <- factor(encouragement.from.friends,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(encouragement.from.friends, Encouragement.from..my.friends.to.study.abroad)
+
+#better earning prospects
+better.earning.prospects<-as.factor(Better.earning.prospects.abroad)
+better.earning.prospects <- factor(better.earning.prospects,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(better.earning.prospects, Better.earning.prospects.abroad)
+
+#social prestige
+social.prestige<-as.factor(The.social.prestige.of.studying.abroad)
+social.prestige <- factor(social.prestige,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(social.prestige, The.social.prestige.of.studying.abroad)
+
+#experience different culture
+experience.different.culture<-as.factor(To.experience.a.different.culture)
+experience.different.culture <- factor(experience.different.culture,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(experience.different.culture, To.experience.a.different.culture)
+
+```
+
+##Factors influencing the decision to study in Russia
+This section presents the factors that influenced the decision of international students to study in Russia. It will establish the push factors that account for students decision to leave their home country and the pull factors in Russia and HSE that influenced their decision to study. Finally, this section will present a linear regression to explain statistically significant push and pull factors.
+
+
+#Push Factors from Home Country (Descriptive Statistics) 
+```{r echo=FALSE}
+#push factors
+
+pushfactors<-data.frame(unavailable.program,low.educational.quality,competitive.admission,advantage.of.international.degree,unavailability.of.scholarship,encouragement.from.family,encouragement.from.friends,better.earning.prospects,social.prestige,experience.different.culture)
+
+
+freq(pushfactors, display.type = FALSE)
+
+```
+The factors that influnced respondents' decision to leave their home country and study abroad is discussed in the ensuing paragraphs. .
+
+#unavailable program
+The results show that majority of respondents with shares (47%) reported that the unavailability of the desired program accounted for their decision to leave their home country and study abroad. The plot presents the distribution of this push factor across the regions with its position prominent among students from the Former Soviet Republics and Africa. 
+
+#low quality of education
+The results reflect that low quality of education (with shares 50%) also account for respondents decison to leave their home country.  The plot shows that the influence of this push factor is dominant among students from the Former Soviet Republics, Africa, Eastern Asia and Southern Eastern Asia. 
+
+#competitive University admission in home country
+Majority of the respondents (47%) reported that difficulty in gaining admission to a quality local institution was not influential in their decision to leave their home country. This position, as depicted in the graph, is held by students from the Former Soviet Republics,Africa and Europe, USA & Australia.
+
+#Advantage of international degree
+The result highlights the position that the perceived advantage of international degree over a local one in the home country (with shares 59%) was influential in respondents decision to study abroad.
+
+#Unavailability of scholarship
+The result show that majority of the respondents (44%) reflect that the unavailability of scholarship opportunities was not influential in their decision to leave their home country.
+
+#encouragement from family
+The result show that majority of the respondents (46%) report that their decision to study abroad was influenced by encouragement of their family.
+
+#encouragement from friends
+The result show that the respondents were uncertain of the influence of the encouragement of their friends in their decision to study abroad.
+
+#Better earning prospects abroad
+With the factor, better earning prospects abroad majority of respondents (64%) reported that it was very influential in their decision to stduy abroad. 
+
+#social prestige
+Majority of the respondents (61%) revealed that the social prestige associated with studying abroad was very influential in their decision to study abroad.
+
+#Experience different culture
+Majority of the respondents (56%) reported that the decision to study abroad was influenced by their desire to experience a different culture.
+
+
+```{r include=FALSE}
+#Graphs
+ggplot(data, aes(x=unavailable.program, fill=region)) + geom_bar() + labs(title="Unavailable program")
+
+ggplot(data, aes(x=low.educational.quality, fill=region)) + geom_bar() + labs(title="Low quality of education")
+
+ggplot(data, aes(x=competitive.admission, fill=region)) + geom_bar() + labs(title="Competitive University Admission")
+
+ggplot(data, aes(x=advantage.of.international.degree, fill=region)) + geom_bar() + labs(title="Perceived advantage of internatioal degree")
+
+ggplot(data, aes(x=unavailability.of.scholarship, fill=region)) + geom_bar() + labs(title="Unavailability of scholarship")
+
+ggplot(data, aes(x=encouragement.from.family, fill=region)) + geom_bar() + labs(title="Encouragement from family")
+
+ggplot(data, aes(x=encouragement.from.friends, fill=region)) + geom_bar() + labs(title="Encouragement from friends")
+
+ggplot(data, aes(x=better.earning.prospects, fill=region)) + geom_bar() + labs(title="Better earning prospects")
+
+ggplot(data, aes(x=social.prestige, fill=region)) + geom_bar() + labs(title="The.social.prestige.of.studying.abroad")
+
+ggplot(data, aes(x=experience.different.culture, fill=region)) + geom_bar() + labs(title="EXperience different culture")
+
+```
+
+#Regression analysis
+
+#push factors in Home country that influenced the decision to move to Russia
+```{r include=FALSE}
+#empty model
+model0<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~1, data = data)
+
+summary(model0)
+
+```
+
+
+```{r include=FALSE}
+#Full Model
+model1<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~Unavailability.of.the.desired.study.program+Low.quality.of.education+Competitive.university.admission.process..difficult.to.gain.admission.to.a.quality.local.institution+Perceived.advantage.of.international.degree.over.a.local.one.at.the.local.job.market+Unavailability.of.scholarship.opportunities+Encouragement.from.my.family.to.study.abroad+Encouragement.from..my.friends.to.study.abroad+Better.earning.prospects.abroad+The.social.prestige.of.studying.abroad+To.experience.a.different.culture, data=data)
+
+summary(model1)
+
+```
+
+
+```{r echo=FALSE, warning=FALSE, results='asis'}
+#Results of the Regression on Push Factors
+
+stargazer(model1, title="Regression Results for Push Factors in Home Country",
+          align=TRUE, dep.var.labels=c("Push Factors"),
+          covariate.labels=c("Unavailability of desired study program","Low quality of education", "Competitive university admission process","Perceieved advantage of an international degree","Unavailability of scholarship opportunities","Encouragement from family", "Encouragement from friends", "Better earning prospects abroad", "Social prestige of studying abroad", "Experience a different culture"),
+          no.space=TRUE, single.row=TRUE, type = "text")
+
+
+```
+
+The table displays the results of the full regression model to highlight the influence of the push factors in the home country on the decision to study abroad.The model is statistically significant at all levels (i.e. 1%, 5% and 10%). The R2 for the model is 0.138 which means approximately 14% of the variability of the the decision to study in Russia is accounted for by the variables in the model and the results are reasonably good.
+
+The model show that competitive university admission process, perceived advantage of an international degree, the social prestige of studying abroad and experiencing a different culture were influential push factors in respondents' decision to study abroad. 
+
+
+
+#Pull factors (Descriptive analysis)
+The factors in Russia and HSE that infleunced respondents' decision to pursue their studies in Russia
+
+Pull factors in Russia
+```{r include=FALSE}
+
+#availability of desired program
+available.study.program <-as.factor(Availability.of.desired.study.program)
+available.study.program <- factor(available.study.program,
+                            levels = c(1,2,3,4,5),
+                            labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(available.study.program, Availability.of.desired.study.program)
+
+#high quality of education
+high.educational.quality<-as.factor(Higher.quality.of.education..compared.to.home.country.)
+high.educational.quality <- factor(high.educational.quality,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(high.educational.quality, Higher.quality.of.education..compared.to.home.country.)
+
+#low cost of living
+low.cost.living<-as.factor(Low.cost.of.living)
+low.cost.living <- factor(low.cost.living,
+                          levels = c(1,2,3,4,5),
+                          labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(low.cost.living,Low.cost.of.living)
+
+#low tuition fees
+low.tuition<-as.factor(Low.tuition.fees)
+low.tuition <- factor(low.tuition,
+                      levels = c(1,2,3,4,5),
+                      labels = c("Not at all influential", 
+                                 "Slightly influential",  
+                                 "Somewhat influential", 
+                                 "Very influential", 
+                                 "Extremely influential"))
+
+table(low.tuition, Low.tuition.fees)
+
+#Awarded scholarships
+scholarship.tuitionwaiver<-as.factor(Awarded.scholarships.or.tuition.waiver)
+scholarship.tuitionwaiver <- factor(scholarship.tuitionwaiver,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(scholarship.tuitionwaiver,Awarded.scholarships.or.tuition.waiver)
+
+#Attraction to Russian culture
+russian.culture<-as.factor(Attraction.to.Russian.culture..society)
+russian.culture <- factor(russian.culture,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(russian.culture, Attraction.to.Russian.culture..society)
+
+#Career prospects in Russia
+career.prospects<-as.factor(Career.prospects.in.Russia)
+career.prospects <- factor(career.prospects,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(career.prospects, Career.prospects.in.Russia)
+
+#Recommendations from family and friends
+family.friends.recommendations<-as.factor(Personal.recommendations.from.parents..relatives..and.friends)
+family.friends.recommendations <- factor(family.friends.recommendations,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(family.friends.recommendations, Personal.recommendations.from.parents..relatives..and.friends)
+
+#Cultural Proximity
+cultural.proximity<-as.factor(cultural.proximity.with.home)
+cultural.proximity <- factor(cultural.proximity,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(cultural.proximity, cultural.proximity.with.home)
+
+#Geographical proximity
+geographical.proximity<-as.factor(geographical.proximity.with.home)
+geographical.proximity <- factor(geographical.proximity,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(geographical.proximity, geographical.proximity.with.home)
+
+```
+
+
+```{r echo=FALSE}
+Pullfactors_Russia<-data.frame(available.study.program, high.educational.quality, low.cost.living, low.tuition, scholarship.tuitionwaiver, russian.culture, career.prospects, family.friends.recommendations, cultural.proximity, geographical.proximity)
+
+freq(Pullfactors_Russia, display.type = F)
+
+```
+#Availablility of desired program
+Majority of the respondents (68%) revealed that the availability of the desired study program  was very influential in their decision to study in Russia.
+
+#High quality of education
+Majority of the respondents (68%) considered the quality of education in Russia to be higher in comparison with their home country and as such very influential in their decision to study in Russia.
+
+#Low cost of living
+The result show that the respondents were uncertain of the influence of low cost of living as a factor in their decision to study in Russia.
+
+#Low tuition fees
+Respondents were asked about the influence of the cost of tuition on their decision to study in Russia. The results show that majority of the respondents' (44%) decision to study in Russia was influenced by the low cost of tuition. 
+
+#Awarded Scholarships
+On the influence of scholarship on students' decision to study in Russia,  respondents (57%) reported that awarded scholarship and tuition waivers were influential in their decision to study in Russia.
+
+#Attraction to Russian culture
+The results show that majority of the respondents' (45%) decision to study in Russia was heavily influenced by their attraction to the Russian culture.
+
+#career prospects in Russia
+The results show that majority of the respondents (45%) report that career prospects in Russia was very influential in their decision to study in Russia. 
+
+#Recommendations from family and friends
+A significant number of respondents (40%) reported that their decision to study in Russia was influenced by recommendations from family and friends.
+
+#Cultural proximity
+he results show that cultural proximity was not very influential in defining respondents (43%) decision to study in Russia.
+
+#Geographical proximity
+Similarly, the results show that geographical proximity was not influential in respondents (47%) decision to study in Russia.
+
+
+```{r include=FALSE}
+
+ggplot(data, aes(x=available.study.program, fill=region)) + geom_bar() + labs(title="Availability of desired study program")
+
+ggplot(data, aes(x=high.educational.quality, fill=region)) + geom_bar() + labs(title="High quality of education")
+
+ggplot(data, aes(x=low.cost.living, fill=region)) + geom_bar() + labs(title="Low cost of living")
+
+ggplot(data, aes(x=low.tuition, fill=region)) + geom_bar() + labs(title="Low tuition fees")
+
+ggplot(data, aes(x=scholarship.tuitionwaiver, fill=region)) + geom_bar() + labs(title="Scholarship or tuition waiver")
+
+ggplot(data, aes(x=russian.culture, fill=region)) + geom_bar() + labs(title="Attraction to Russian culture")
+
+ggplot(data, aes(x=career.prospects, fill=region)) + geom_bar() + labs(title="Career prospects in Russia")
+
+ggplot(data, aes(x=family.friends.recommendations, fill=region)) + geom_bar() + labs(title="Recommendations from family and friends")
+
+ggplot(data, aes(x=cultural.proximity, fill=region)) + geom_bar() + labs(title="Cultural proximity")
+
+ggplot(data, aes(x=geographical.proximity, fill=region)) + geom_bar() + labs(title="Geograhical proximity")
+
+```
+
+#Regression Analysis
+
+#Pull Factors in Russia that influenced the students' decision to study
+```{r include=FALSE}
+#empty model
+model0<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~1, data = data)
+
+summary(model0)
+
+```
+
+
+```{r include=FALSE}
+#Full Model
+model2<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~Availability.of.desired.study.program+Higher.quality.of.education..compared.to.home.country.+Low.cost.of.living+Low.tuition.fees+Awarded.scholarships.or.tuition.waiver+Attraction.to.Russian.culture..society+Career.prospects.in.Russia+Personal.recommendations.from.parents..relatives..and.friends+cultural.proximity.with.home+geographical.proximity.with.home, data=data)
+
+summary(model2)
+
+```
+
+
+```{r echo=FALSE, warning=FALSE, results='asis'}
+#Results of the Regression on Push Factors
+
+stargazer(model2, title="Regression Results for Pull Factors in Russia",
+          align=TRUE, dep.var.labels=c("Pull Factors"),
+          covariate.labels=c("Availability of desired study program","Higher quality of education", "Low cost of living","Low tuition fees","Awarded scholarship or tuition waivers","Attraction to Russian culture and society", "Career prospects in Russia", "Recommendations from family and friends", "Cultural proximity", "Geographical proximity"),
+          no.space=TRUE, single.row=TRUE, type = "text")
+
+```
+
+The table displays the results of the full regression model to highlight the influence of the pull factors in Russia on the decision to study in Russia.The model is statistically significant at all levels (i.e. 1%, 5% and 10%). With model R2 at 0.173, this means approximately 17% of the variability of the decision to study in Russia is accounted for by the variables in the model and the results are reasonably good.
+
+The model show that availability of desired study program, higher quality of education, low cost of living, attraction to Russian culture and society as well as recommendations from friends and family were influential pull factors in respondents' decision to study in Russia. 
+
+#Pull factors in HSE that influenced students' decision to study in Russia
+```{r include=FALSE}
+#Quality and Reputation of HSE
+HSE.qualityandreputation <-as.factor(Quality.and.reputation.of.the.University)
+HSE.qualityandreputation <- factor(HSE.qualityandreputation,
+                            levels = c(1,2,3,4,5),
+                            labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(HSE.qualityandreputation, Quality.and.reputation.of.the.University)
+
+#Recognition of HSE degree
+recognition.of.HSE.degree<-as.factor(Recognition.of.the.degree.in.my.home.country)
+recognition.of.HSE.degree <- factor(recognition.of.HSE.degree,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(recognition.of.HSE.degree, Recognition.of.the.degree.in.my.home.country)
+
+#Quality of teaching staff
+quality.teachers<-as.factor(Quality.of.the.teaching.staff)
+quality.teachers <- factor(quality.teachers,
+                          levels = c(1,2,3,4,5),
+                          labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(quality.teachers,Quality.of.the.teaching.staff)
+
+#Reputation of the alumni
+alumni.reputation<-as.factor(The.reputation.of.the.alumni)
+alumni.reputation <- factor(alumni.reputation,
+                      levels = c(1,2,3,4,5),
+                      labels = c("Not at all influential", 
+                                 "Slightly influential",  
+                                 "Somewhat influential", 
+                                 "Very influential", 
+                                 "Extremely influential"))
+
+table(alumni.reputation, The.reputation.of.the.alumni)
+
+#reputation of the international community
+internationalcommunity.reputation<-as.factor(The.reputation.of.the.international.community)
+internationalcommunity.reputation <- factor(internationalcommunity.reputation,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(internationalcommunity.reputation,The.reputation.of.the.international.community)
+
+#HSE rank
+HSE.rank<-as.factor(HSE.position.in.international.university.rankings)
+HSE.rank <- factor(HSE.rank,
+                   levels = c(1,2,3,4,5),
+                   labels = c("Not at all influential",
+                              "Slightly influential",
+                              "Somewhat influential",
+                              "Very influential",
+                              "Extremely influential"))
+
+table(HSE.rank, HSE.position.in.international.university.rankings)
+
+#Cost of tuition
+tuition.cost<-as.factor(Cost.of.tuition.for.international.students)
+tuition.cost <- factor(tuition.cost,
+                       levels = c(1,2,3,4,5),
+                       labels = c("Not at all influential", 
+                                  "Slightly influential", 
+                                  "Somewhat influential", 
+                                  "Very influential",
+                                  "Extremely influential"))
+
+table(tuition.cost, Cost.of.tuition.for.international.students)
+
+#Availability of scholarship
+available.scholarships<-as.factor(Availability.of.scholarships)
+available.scholarships <- factor(available.scholarships,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(available.scholarships,Availability.of.scholarships)
+
+#Support Services for international students
+international.students.support<-as.factor(Support.services.for.international.students)
+international.students.support <- factor(international.students.support,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(international.students.support, Support.services.for.international.students)
+
+#Graduate employment rate
+graduate.employment<-as.factor(Graduates.employment.rates)
+graduate.employment <- factor(graduate.employment,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(graduate.employment, Graduates.employment.rates)
+
+
+#HSE international strategic alliances
+HSE.alliances<-as.factor(HSE.s.international.strategic.alliances)
+HSE.alliances <- factor(HSE.alliances,
+                        levels = c(1,2,3,4,5),
+                        labels = c("Not at all influential",
+                                   "Slightly influential",
+                                   "Somewhat influential", 
+                                   "Very influential", 
+                                   "Extremely influential"))
+
+table(HSE.alliances, HSE.s.international.strategic.alliances)
+
+
+#Local Employers preference for HSE degrees
+employers.preference.for.HSE.degrees<-as.factor(Local.employers.preference.of..degrees.awarded.by.HSE)
+employers.preference.for.HSE.degrees <- factor(employers.preference.for.HSE.degrees,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(employers.preference.for.HSE.degrees, Local.employers.preference.of..degrees.awarded.by.HSE)
+
+```
+
+#Pull factors in HSE
+```{r echo=FALSE}
+Pullfactors_HSE<-data.frame(HSE.qualityandreputation,recognition.of.HSE.degree,quality.teachers,alumni.reputation,internationalcommunity.reputation,HSE.rank,tuition.cost,available.scholarships,international.students.support,graduate.employment,HSE.alliances,employers.preference.for.HSE.degrees)
+
+freq(Pullfactors_HSE, display.type = F)
+```
+
+#quality and reputation
+The results show that majority of the respondents (86%) reported that the quality and reputation of HSE was very influential in their decision to study in Russia.
+
+#recognition of degree
+The results show that majority of the respondents (53%) reported that the recognition of HSE's degree in their home country was very influential in their decision to study in Russia.
+
+#quality of teachers
+The results show that majority of the respondents (69%) reported that the quality of HSE's teachers was very influential in their decision to study in Russia.
+
+#reputation of alumni
+The results show that majority of the respondents (50%) reported that the reputation of HSE's alumni was very influential in their decision to study in Russia.
+
+#reputation of international community
+The results show that majority of the respondents (56%) reported that the reputation of HSE's international community was very influential in their decision to study in Russia.
+
+#HSE rank
+The results show that majority of the respondents (66%) reported that HSE's position in international university rankings was very influential in their decision to study in Russia.
+
+#Cost of tuition fees
+Similarly, majority of the respondents (66%) reported that their decision to study in HSE was influenced by the University's cost of tuition for international students.
+
+#Availability of Scholarships
+The results also reported that respondents (68%) decsion to stduy in Russia were influenced by the availability of scholarships in HSE. 
+
+#support for international students
+The results show that the respondents (50%) reported that HSE's support for international students was very influential in their decision to study in Russia.
+
+#Graduate employment rates
+The results show that the respondents (53%) reported that HSE's graduate employment rates was very influential in their decision to study in Russia.
+
+#HSE alliances
+The results show that the respondents (47%) reported that HSE's strategic alliances with other institutions was influential in their decision to study in Russia.
+
+#Local preference for HSE degrees
+The results show that the respondents (50%) reported that local employers preference for HSE's degree was very influential in their decision to study in Russia.
+
+
+
+```{r include=FALSE}
+ggplot(data, aes(x=HSE.qualityandreputation, fill=region)) + geom_bar() + labs(title="Quality and reputation of HSE")
+
+ggplot(data, aes(x=recognition.of.HSE.degree, fill=region)) + geom_bar() + labs(title="Recognition of degree")
+
+ggplot(data, aes(x=quality.teachers, fill=region)) + geom_bar() + labs(title="Quality of teachers")
+
+ggplot(data, aes(x=alumni.reputation, fill=region)) + geom_bar() + labs(title="Reputation of alumni")
+
+ggplot(data, aes(x=internationalcommunity.reputation, fill=region)) + geom_bar() + labs(title="Reputation of alumni")
+
+ggplot(data, aes(x=HSE.rank, fill=region)) + geom_bar() + labs(title="HSE's rank")
+
+ggplot(data, aes(x=tuition.cost, fill=region)) + geom_bar() + labs(title="Cost of tuition")
+
+ggplot(data, aes(x=available.scholarships, fill=region)) + geom_bar() + labs(title="Availability of scholarships")
+
+ggplot(data, aes(x=international.students.support, fill=region)) + geom_bar() + labs(title="Support services for international students")
+
+ggplot(data, aes(x=graduate.employment, fill=region)) + geom_bar() + labs(title="Graduate employment rate")
+
+ggplot(data, aes(x=HSE.alliances, fill=region)) + geom_bar() + labs(title="HSE alliances")
+
+ggplot(data, aes(x=employers.preference.for.HSE.degrees, fill=region)) + geom_bar() + labs(title="Local preference for HSE degrees")
+
+```
+
+
+#Regression analysis
+
+#Pull factors in HSE that influenced students decision to study in Russia
+
+```{r include=FALSE}
+#empty model
+model0<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~1, data = data)
+
+summary(model0)
+
+```
+
+
+```{r include=FALSE}
+#Full Model
+
+model3<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~Quality.and.reputation.of.the.University+Recognition.of.the.degree.in.my.home.country+Quality.of.the.teaching.staff+The.reputation.of.the.alumni+The.reputation.of.the.international.community+HSE.position.in.international.university.rankings+Cost.of.tuition.for.international.students+Availability.of.scholarships+Support.services.for.international.students+Graduates.employment.rates+HSE.s.international.strategic.alliances+Local.employers.preference.of..degrees.awarded.by.HSE, data=data)
+
+summary(model3)
+```
+
+
+
+```{r echo=FALSE, warning=FALSE, results='asis'}
+#Results of the Regression on Push Factors
+stargazer(model3, title="Regression Results for Pull Factors in HSE",
+          align=TRUE, dep.var.labels=c("Pull Factors"),
+          covariate.labels=c("Quality and reputation of HSE","Recognition of HSE degree", "Quality of the teaching staff","Reputation of the alumni","Reputation of the international community","HSE position in University's ranking", "Cost of tuition", "Availability of scholarships", "Support for International students", "Graduates employment rates", "HSE alliances", "Employers preference for HSE degrees"),no.space=TRUE, single.row=TRUE, type = "text")
+
+```
+
+The table displays the results of the full regression model to highlight the influence of the pull factors in HSE on the decision to study in Russia.The model is statistically significant at all levels (i.e. 1%, 5% and 10%). With model R2 at 0.095, this means approximately 10% of the variability of the decision to study in Russia is accounted for by the variables in the model and the results are reasonably good.
+
+The model show that the reputation of the alumni, HSE position in University's ranking and Graduates employment rates were  influential pull factors in respondents' decision to study in Russia. 
+
+
+#Pull Factors (Russia and HSE) that influenced students' decision to study in Russia
+
+```{r include=FALSE}
+
+model4<-lm(as.numeric(What.degree.are.you.currently.studying.for.)~Availability.of.desired.study.program+Higher.quality.of.education..compared.to.home.country.+Low.cost.of.living+Low.tuition.fees+Awarded.scholarships.or.tuition.waiver+Attraction.to.Russian.culture..society+Career.prospects.in.Russia+Personal.recommendations.from.parents..relatives..and.friends+cultural.proximity.with.home+geographical.proximity.with.home+Quality.and.reputation.of.the.University+Recognition.of.the.degree.in.my.home.country+Quality.of.the.teaching.staff+The.reputation.of.the.alumni+The.reputation.of.the.international.community+HSE.position.in.international.university.rankings+Cost.of.tuition.for.international.students+Availability.of.scholarships+Support.services.for.international.students+Graduates.employment.rates+HSE.s.international.strategic.alliances+Local.employers.preference.of..degrees.awarded.by.HSE, data=data)
+
+summary(model4)
+```
+
+
+```{r echo=FALSE, warning=FALSE, results='asis'}
+#Results of the Regression on Push Factors
+stargazer(model4, type = "text", title="Regression Results for Pull Factors in Russia",
+          align=TRUE, dep.var.labels=c("Pull Factors"),
+          no.space=TRUE, single.row=TRUE)
+
+stargazer(model4, title="Regression Results for Pull Factors in Russia",
+          align=TRUE, dep.var.labels=c("Pull Factors"),
+          covariate.labels=c(""),
+          no.space=TRUE, single.row=TRUE, type = "text")
+
+```
+
+The table displays the results of the full regression model to highlight the influence of the pull factors in Russia and HSE on the decision of students to study in Russia.The model is statistically significant at all levels (i.e. 1%, 5% and 10%). The R2 for the model is 0.214 which means approximately 21% of the variability of the the decision to study in Russia is accounted for by the variables in the model and the results are reasonably good.
+
+The model show that Availability of the desired study program, higher quality of education in Russia, low cost of living, attraction to Rusian culture and society, personal recommendations from parents, relatives and friends, grographical proximity, HSE poistion on international university rankings and graduates employment rates were all were influential pull factors in respondents' decision to study in Russia. 
+
+
+
+
+##Post graduation migration plans
+This section highlights students' post migration plans
+
+#Post Graduation migration plans
+
+```{r echo=FALSE}
+freq(What.are.your.plans.after.graduation., display.type = FALSE)
+
+ggplot(data, aes(x=What.are.your.plans.after.graduation., fill=region)) + geom_bar() + labs(title="Post graduation migration plans")
+
+```
+This results show the distribution of respondents and their post graduation migration plans. 37% of the respondents reported that they intended to move to another country after graduation, 38% reported they intended to stay in Russia and 23% wanted to return home. 
+
+
+#Staying in Russia
+
+#Pull factors in Russia influencing students decision to stay after graduation
+```{r include=FALSE}
+#Better job opportunities
+job.opportunities <-as.factor(Better.job.opportunities..in.comparison.with.home.country.)
+job.opportunities <- factor(job.opportunities,
+                            levels = c(1,2,3,4,5),
+                            labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(job.opportunities, Better.job.opportunities..in.comparison.with.home.country.)
+
+#Higher quality of life
+high.quality.life<-as.factor(Higher.quality.of.life..in.comparison.with.home.country.)
+high.quality.life <- factor(high.quality.life,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(high.quality.life, Higher.quality.of.life..in.comparison.with.home.country.)
+
+#Better career opportunities
+career.opportunities<-as.factor(Better.career.opportunities.and.advancement.in.chosen.profession)
+career.opportunities <- factor(career.opportunities,
+                          levels = c(1,2,3,4,5),
+                          labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(career.opportunities,Better.career.opportunities.and.advancement.in.chosen.profession)
+
+#high income level
+high.income.level<-as.factor(Higher.income.level)
+high.income.level <- factor(high.income.level,
+                      levels = c(1,2,3,4,5),
+                      labels = c("Not at all influential", 
+                                 "Slightly influential",  
+                                 "Somewhat influential", 
+                                 "Very influential", 
+                                 "Extremely influential"))
+
+table(high.income.level, Higher.income.level)
+
+#Ties to family and friends
+family.friends.ties<-as.factor(Ties.to.family.and.friends)
+family.friends.ties <- factor(family.friends.ties,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(family.friends.ties,Ties.to.family.and.friends)
+
+#international experience
+international.experience<-as.factor(Gain.international.experience)
+international.experience <- factor(international.experience,
+                   levels = c(1,2,3,4,5),
+                   labels = c("Not at all influential",
+                              "Slightly influential",
+                              "Somewhat influential",
+                              "Very influential",
+                              "Extremely influential"))
+
+table(international.experience, Gain.international.experience)
+```
+
+
+```{r}
+StayinRussia_Pullfactors<-data.frame(job.opportunities,high.quality.life,career.opportunities,high.income.level,family.friends.ties,international.experience)
+
+freq(StayinRussia_Pullfactors, display.type = F)
+
+```
+
+#better job opportunities
+This show that the respondents' decision to stay in Russia after graduation is influenced by better job opportunities in Russia as compared to the home country.
+
+#quality of life
+This show that the respondents' decision to stay in Russia after graduation is influenced by higher quality of life in Russia as compared to the home country.
+
+#career opportunities
+This show that the respondents' decision to stay in Russia after graduation is influenced by better career opportunities in Russia.
+
+#income level
+This show that the respondents' decision to stay in Russia after graduation is influenced by higher income level in Russia.
+
+#ties to family and friends
+This show that the respondents' decision to stay in Russia after graduation is influenced by ties to family and friends in Russia.
+
+#international experience
+This show that the respondents' decision to stay in Russia after graduation is influenced by their desire to gain international experience. 
+
+
+#Push factors in Home country that influence the decision to stay in Russia
+```{r}
+#family expectations
+familyexpectations<-as.factor(Family.expectations)
+familyexpectations <- factor(familyexpectations,
+                       levels = c(1,2,3,4,5),
+                       labels = c("Not at all influential", 
+                                  "Slightly influential", 
+                                  "Somewhat influential", 
+                                  "Very influential",
+                                  "Extremely influential"))
+
+table(familyexpectations, Family.expectations)
+
+#Availability of scholarship
+cultural.practices<-as.factor(Restrictive.cultural.practices..eg..pressure.to.marry.)
+cultural.practices <- factor(cultural.practices,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(cultural.practices, Restrictive.cultural.practices..eg..pressure.to.marry.)
+
+#limited jobs
+limited.jobs<-as.factor(Limited.job.opportunities.in.home.country)
+limited.jobs <- factor(limited.jobs,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(limited.jobs, Limited.job.opportunities.in.home.country)
+
+#lower income levels
+lower.income<-as.factor(Lower.income.levels)
+lower.income <- factor(lower.income,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(lower.income, Lower.income.levels)
+
+
+#Lower quality of life
+lower.quality.life<-as.factor(Lower.quality.of.life.2)
+lower.quality.life <- factor(lower.quality.life,
+                        levels = c(1,2,3,4,5),
+                        labels = c("Not at all influential",
+                                   "Slightly influential",
+                                   "Somewhat influential", 
+                                   "Very influential", 
+                                   "Extremely influential"))
+
+table(lower.quality.life, Lower.quality.of.life.2)
+
+
+#Political persecution
+politicalpersecution<-as.factor(Political.persecution)
+politicalpersecution <- factor(politicalpersecution,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(politicalpersecution, Political.persecution)
+
+#Dangers to ones own life
+danger.to.ones.life<-as.factor(Danger.or.fear.for.one.s.own.life)
+danger.to.ones.life <- factor(Danger.or.fear.for.one.s.own.life,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(danger.to.ones.life, Danger.or.fear.for.one.s.own.life)
+
+```
+
+
+```{r echo=FALSE}
+#Push factors in Home country
+StayinRussia_HCpushfactors<-data.frame(familyexpectations,cultural.practices,limited.jobs,lower.income,lower.quality.life,politicalpersecution,danger.to.ones.life)
+
+freq(StayinRussia_HCpushfactors, display.type = F)
+
+```
+
+#family expectations
+This shows that the respondents' are uncertain about the influence of family expectations in their decision to not return home after graduation. 
+
+#cultural practices
+This shows that cultural practices was not influential in respondents' decision to not return home after graduation. 
+
+#limited job opportunities in Home country
+This shows that limited job opportunities in home country was influential in respondents' decision to not return home after graduation. 
+
+#income levels
+Respondents reported that lower income levels in their home country was influential in their decision to not return home after graduation.
+
+#quality of life
+Respondents reported that lower quality of life in their home country was influential in their decision to not return home after graduation.
+
+#political persecution
+This shows that fear of political persecution was not influential in respondents' decision to not return home after graduation. 
+
+#danger to one's life
+This shows that danger to one's own life was not influential in respondents' decision to not return home after graduation. 
+
+
+#Returning home
+
+#Pull factors in Home Country that influence the decision to return after graduation
+```{r include=FALSE}
+#Better job opportunities
+professional.opportunities <-as.factor(Better.professional.opportunities.in.home.country)
+professional.opportunities <- factor(professional.opportunities,
+                            levels = c(1,2,3,4,5),
+                            labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(professional.opportunities, Better.professional.opportunities.in.home.country)
+
+#Better quality of life
+better.quality.life<-as.factor(Better.quality.of.living.in.home.country)
+better.quality.life <- factor(better.quality.life,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(better.quality.life, Better.quality.of.living.in.home.country)
+
+#Feeling more comfortable at Home
+home.comfort<-as.factor(Feeling.more.comfortable.at.home)
+home.comfort <- factor(home.comfort,
+                          levels = c(1,2,3,4,5),
+                          labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(home.comfort,Feeling.more.comfortable.at.home)
+
+#higher income level
+higher.income <-as.factor(Higher.income.levels)
+higher.income <- factor(higher.income,
+                      levels = c(1,2,3,4,5),
+                      labels = c("Not at all influential", 
+                                 "Slightly influential",  
+                                 "Somewhat influential", 
+                                 "Very influential", 
+                                 "Extremely influential"))
+
+table(higher.income, Higher.income.levels)
+
+#Family ties back home
+family.ties<-as.factor(Family.ties.back.home)
+family.ties <- factor(family.ties,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(family.ties, Family.ties.back.home)
+```
+
+
+```{r echo=FALSE}
+ReturnHome_Pullfactors<-data.frame(professional.opportunities,better.quality.life,home.comfort,higher.income,family.ties)
+
+freq(ReturnHome_Pullfactors, display.type = F)
+
+```
+
+#professional opportunites in HC
+This shows that better professional opportunities in respondents' home country was influential in their plan to return home after graduation.
+
+#quality of living in HC
+This shows that better quality of living respondents' home country was influential in their plan to return home after graduation.
+
+#feeling comfortable at home
+This shows that feeling more comfortable in respondents' home country was influential in their plan to return home after graduation.
+
+#income levels
+This shows that higher income levels in respondents' home country was influential in their plan to return home after graduation.
+
+#family ties in HC
+This shows that family ties back home was influential in respondents' plan to return home after graduation.
+
+
+#Push factors in Russia influencing the decision to return home after graduation
+
+```{r include=FALSE}
+#Feelings of alienation
+feelings.of.alienation <-as.factor(Feelings.of.alienation.from.the.Russian.culture.and.population)
+feelings.of.alienation <- factor(feelings.of.alienation,
+                            levels = c(1,2,3,4,5),
+                            labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(feelings.of.alienation, Feelings.of.alienation.from.the.Russian.culture.and.population)
+
+#Difficulties in finding job
+job.difficulties<-as.factor(Difficulties.in.finding.a.job)
+job.difficulties <- factor(job.difficulties,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(job.difficulties, Difficulties.in.finding.a.job)
+
+#Poor working conditions
+poor.work<-as.factor(Poor.working.conditions)
+poor.work <- factor(poor.work,
+                          levels = c(1,2,3,4,5),
+                          labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(poor.work, Poor.working.conditions)
+
+#Lower quality of life
+low.life.quality <-as.factor(Lower.quality.of.life)
+low.life.quality <- factor(low.life.quality,
+                      levels = c(1,2,3,4,5),
+                      labels = c("Not at all influential", 
+                                 "Slightly influential",  
+                                 "Somewhat influential", 
+                                 "Very influential", 
+                                 "Extremely influential"))
+
+table(low.life.quality, Lower.quality.of.life)
+
+#Perceived or Experienced discrimination
+discrimination<-as.factor(Perceived.or.experienced.discrimination)
+discrimination <- factor(discrimination,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(discrimination, Perceived.or.experienced.discrimination)
+
+#Crime and low level of safety
+crime.safety<-as.factor(Crime.and.low.level.of.safety)
+crime.safety <- factor(crime.safety,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(crime.safety, Crime.and.low.level.of.safety)
+
+
+#Strict migration process
+strict.migration<-as.factor(Strict.migration.process.difficulties.in.getting.visas.)
+strict.migration <- factor(strict.migration,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(strict.migration, Strict.migration.process.difficulties.in.getting.visas.)
+
+```
+
+
+```{r echo=FALSE}
+ReturnHome_RUPushfactors<-data.frame(feelings.of.alienation, job.difficulties, poor.work, low.life.quality, discrimination, crime.safety, strict.migration)
+
+freq(ReturnHome_RUPushfactors)
+
+```
+
+#feeling of alienation
+This shows that feeling of alientation from the Russian culture and people was not influential in respondents' plan leave Russia after graduation.
+
+#finding jobs
+This shows that difficulty in finding a job in Russia was influential in respondents' plan to leave after graduation.
+
+#working conditions
+This shows that respondents were uncertain about the influence of poor working conditions in Russia in their plan to leave after graduation.
+
+#quality of life
+This shows that respondents were uncertain about the influence of lower qualiy of life in Russia in their plan to leave after graduation.
+
+#discrimination
+This shows that respondents reported that perceived or experienced discriminations was not influential in their decision to leave after graduation.
+
+#crime and safety level
+Respondents reported that crime and low level of safety in Russia was not influential in their decision to leave after graduation.
+
+#immigration process
+Respondents reported that Russia's stict migration process was influential in their decision to leave after graduation.
+
+
+#Moving to another country
+
+
+#Pull factors in the country that influences the decision to move to another country
+
+```{r include=FALSE}
+#Better job opportunities
+better_job.opportunities <-as.factor(Better.job.opportunities)
+better_job.opportunities <- factor(better_job.opportunities,
+                            levels = c(1,2,3,4,5),
+                            labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(better_job.opportunities, Better.job.opportunities)
+
+#higher quality of life
+high_quality.life<-as.factor(Higher.quality.of.life)
+high_quality.life <- factor(high_quality.life,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(high_quality.life, Higher.quality.of.life)
+
+#Better career opportunities
+better.career<-as.factor(Better.career.opportunities.and.advancement.in.chosen.profession.1)
+better.career <- factor(better.career,
+                          levels = c(1,2,3,4,5),
+                          labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(better.career, Better.career.opportunities.and.advancement.in.chosen.profession.1)
+
+#higher income level
+high.income <-as.factor(Higher.income.levels.1)
+high.income <- factor(high.income,
+                      levels = c(1,2,3,4,5),
+                      labels = c("Not at all influential", 
+                                 "Slightly influential",  
+                                 "Somewhat influential", 
+                                 "Very influential", 
+                                 "Extremely influential"))
+
+table(high.income, Higher.income.levels.1)
+
+#Family and Friends ties 
+family_friends.ties<-as.factor(Ties.to.family.and.friends.1)
+family_friends.ties <- factor(family_friends.ties,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(family_friends.ties, Ties.to.family.and.friends.1)
+
+#Gain international experience
+gain.experience<-as.factor(Gain.international.experience.1)
+gain.experience <- factor(gain.experience,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(gain.experience, Gain.international.experience.1)
+
+#Flexible immigration process 
+flexible.immigration<-as.factor(Flexible.immigration.process)
+flexible.immigration <- factor(flexible.immigration,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(flexible.immigration, Flexible.immigration.process)
+
+```
+
+
+```{r echo=FALSE}
+Move2AnotherCountry_Pullfactors<-data.frame(better_job.opportunities, high_quality.life, better.career, high.income, family_friends.ties, gain.experience, flexible.immigration)
+
+freq(Move2AnotherCountry_Pullfactors, display.type = F)
+
+```
+
+#job opportunities
+Respondents reported that their plan to move to another country after graduation was influenced by better job opportunities in that country. 
+
+#quality of life
+Respondents reported that their plan to move to another country after graduation was influenced by higher quality of life in that country.
+
+#career opportunities
+Respondents reported that their plan to move to another country after graduation was influenced by better career opportunities in that country.
+
+#income levels
+Respondents reported that their plan to move to another country after graduation was influenced by higher income levels in that country.
+
+#ties to family and friends
+Respondents reported that their plan to move to another country after graduation was not influenced by better job opportunities in that country.
+
+#international experience
+Respondents reported that desire to gain international experience influenced their plan to move to another country after graduation.
+
+#immigration process
+Respondents reported that flexible immigration process influenced their plan to move to another country after graduation.
+
+
+#Push factors in Russia influencing the decision to return home
+
+```{r include=FALSE}
+#Feelings of alienation
+feeling.alienation <-as.factor(Feelings.of.alienation.from.the.Russian.culture.and.population.1)
+feeling.alienation <- factor(feeling.alienation,
+                            levels = c(1,2,3,4,5),
+                            labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(feeling.alienation, Feelings.of.alienation.from.the.Russian.culture.and.population.1)
+
+#Difficulties in finding job
+finding.job<-as.factor(Difficulties.in.finding.a.job.1)
+finding.job <- factor(finding.job,
+                      levels = c(1,2,3,4,5),
+                      labels = c("Not at all influential", 
+                                 "Slightly influential", 
+                                 "Somewhat influential", 
+                                 "Very influential", 
+                                 "Extremely influential"))
+
+table(finding.job, Difficulties.in.finding.a.job.1)
+
+#Poor working conditions
+work.conditions<-as.factor(Poor.working.conditions.1)
+work.conditions <- factor(work.conditions,
+                          levels = c(1,2,3,4,5),
+                          labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(work.conditions, Poor.working.conditions.1)
+
+#Lower quality of life
+low.quality <-as.factor(Lower.quality.of.life.1)
+low.quality <- factor(low.quality,
+                      levels = c(1,2,3,4,5),
+                      labels = c("Not at all influential", 
+                                 "Slightly influential",  
+                                 "Somewhat influential", 
+                                 "Very influential", 
+                                 "Extremely influential"))
+
+table(low.quality, Lower.quality.of.life.1)
+
+#Perceived or Experienced discrimination
+perceived.discrimination<-as.factor(Perceived.or.experienced.discrimination.1)
+perceived.discrimination <- factor(perceived.discrimination,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(perceived.discrimination, Perceived.or.experienced.discrimination.1)
+
+#Crime and low level of safety
+crime.safety.levels<-as.factor(Crime.and.low.level.of.safety.1)
+crime.safety.levels <- factor(crime.safety.levels,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(crime.safety.levels, Crime.and.low.level.of.safety.1)
+
+
+#Strict migration process
+strict.visa<-as.factor(Strict.migration.process.difficulties.in.getting.visas..1)
+strict.visa <- factor(strict.visa,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(strict.visa, Strict.migration.process.difficulties.in.getting.visas..1)
+
+```
+
+
+```{r echo=FALSE}
+Move2AnotherCountry_RUPushfactors <-data.frame(feeling.alienation, finding.job, work.conditions, low.quality, perceived.discrimination, crime.safety.levels, strict.visa)
+
+freq(Move2AnotherCountry_RUPushfactors, display.type = F)
+
+```
+
+#feeling of aliention 
+This shows that feeling of alientation from the Russian culture and people was not influential in respondents' plan leave Russia after graduation.
+
+#finding jobs 
+This shows that difficulty in finding a job was influential in respondents' plan leave Russia after graduation.
+
+#working conditions
+This shows that poor working conditions was influential in respondents' plan leave Russia after graduation.
+
+#discrimination 
+This shows that perceived or experienced discrimination was not influential in respondents' plan leave Russia after graduation.
+
+#crime and safetly level 
+This shows that crime and low level of saftey was not influential in respondents' plan leave Russia after graduation.
+
+#immigration process 
+This shows that Russia' strict immigration process was not influential in respondents' plan leave Russia after graduation.
+
+
+#Push factors in Home country that influence the decision move to another country
+```{r include=FALSE}
+#family expectations
+family_expectations<-as.factor(Family.expectations.1)
+family_expectations <- factor(family_expectations,
+                       levels = c(1,2,3,4,5),
+                       labels = c("Not at all influential", 
+                                  "Slightly influential", 
+                                  "Somewhat influential", 
+                                  "Very influential",
+                                  "Extremely influential"))
+
+table(family_expectations, Family.expectations.1)
+
+#Availability of scholarship
+restrictive.practices<-as.factor(Restrictive.cultural.practices..eg..pressure.to.marry..1)
+restrictive.practices <- factor(restrictive.practices,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(restrictive.practices, Restrictive.cultural.practices..eg..pressure.to.marry..1)
+
+#limited jobs
+limited.jobs.opportunities<-as.factor(Limited.job.opportunities.in.home.country.1)
+limited.jobs.opportunities <- factor(limited.jobs.opportunities,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(limited.jobs.opportunities, Limited.job.opportunities.in.home.country.1)
+
+#lower income levels
+low.income<-as.factor(Lower.income.levels.1)
+low.income <- factor(low.income,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(low.income, Lower.income.levels.1)
+
+
+#Lower quality of life
+low_lifequality<-as.factor(Lower.quality.of.life.3)
+low_lifequality <- factor(low_lifequality,
+                        levels = c(1,2,3,4,5),
+                        labels = c("Not at all influential",
+                                   "Slightly influential",
+                                   "Somewhat influential", 
+                                   "Very influential", 
+                                   "Extremely influential"))
+
+table(low_lifequality, Lower.quality.of.life.3)
+
+
+#Political persecution
+political_persecution<-as.factor(Political.persecution.1)
+political_persecution <- factor(political_persecution,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(political_persecution, Political.persecution.1)
+
+#Dangers to ones own life
+danger.to.life<-as.factor(Danger.or.fear.for.one.s.own.life.1)
+danger.to.life <- factor(danger.to.life,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(danger.to.life, Danger.or.fear.for.one.s.own.life.1)
+
+```
+
+
+```{r echo=FALSE}
+#Push factors in Home country
+Move2AnotherCountry_HCPushfactors <-data.frame(family_expectations, restrictive.practices, limited.jobs.opportunities, low.income, low_lifequality, political_persecution, danger.to.life)
+
+freq(Move2AnotherCountry_HCPushfactors, display.type = F)
+```
+
+#family expectations 
+This shows that family expectations was not influential in respondents' plan to not return home after graduation.
+
+#cultural practices
+This shows that restrictive cultural practices was not influential in respondents' plan to not return home after graduation.
+
+#limited job opportunities 
+This shows that limited job opportunities back home was influential in respondents' plan to not return home after graduation.
+
+#income levels
+This shows that lower income levels back home was influential in respondents' plan to not return home after graduation.
+
+#quality of life
+This shows that lower quality of life back home was influential in respondents' plan to not return home after graduation.
+
+#political persecution
+This shows that fear of political persecution back home was not influential in respondents' plan to not return home after graduation.
+
+#danger to one's life
+This shows that fear for one's own life back home was not influential in respondents' plan to not return home after graduation.
+
+
+
+
+
+

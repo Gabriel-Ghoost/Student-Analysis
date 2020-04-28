@@ -1,0 +1,27 @@
+
+Regression Results: Push Factors in Home Country
+===============================================================================================
+                                                              Dependent variable:              
+                                                -----------------------------------------------
+                                                                Move to Moscow                 
+                                                         (1)                     (2)           
+-----------------------------------------------------------------------------------------------
+Constant                                           1.504*** (0.104)        2.188*** (0.150)    
+Encouragement from family and friends               0.007 (0.022)          -0.0002 (0.020)     
+Benefits of studying abroad                        0.079*** (0.025)         0.039* (0.023)     
+Access to education                                0.060*** (0.023)        0.059*** (0.021)    
+Competitive university admission process           0.051*** (0.019)        0.034** (0.017)     
+Perceieved advantage of an international degree   -0.064*** (0.021)        -0.039* (0.020)     
+Unavailability of scholarship opportunities        -0.040** (0.018)         -0.023 (0.017)     
+Experience a different culture                    -0.065*** (0.016)        -0.032** (0.015)    
+Age                                                                       -0.215*** (0.033)    
+Home Country                                                               0.003*** (0.001)    
+Gender                                                                    -0.175*** (0.042)    
+-----------------------------------------------------------------------------------------------
+Observations                                             406                     394           
+R2                                                      0.140                   0.305          
+Adjusted R2                                             0.125                   0.287          
+Residual Std. Error                                0.457 (df = 398)        0.411 (df = 383)    
+F Statistic                                     9.235*** (df = 7; 398) 16.815*** (df = 10; 383)
+===============================================================================================
+Note:                                                               *p<0.1; **p<0.05; ***p<0.01

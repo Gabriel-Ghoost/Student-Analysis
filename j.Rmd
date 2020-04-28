@@ -1,0 +1,288 @@
+---
+title: "Quantitative Analysis"
+author: "Gabriel"
+date: "April 2, 2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r include=FALSE}
+#defining the working directory
+getwd()
+setwd("C:/Users/GHOOST/Desktop/New Lit/data")
+```
+
+
+```{r include=FALSE}
+#attaching the packages
+library(car)
+library(foreign)
+library(ggplot2)
+library(summarytools)
+library(kableExtra)
+library(knitr)
+library(psych)
+library(lmtest)
+library(lme4)
+library(sjPlot)
+library(ggrepel)
+library(influence.ME)
+library(mitml)
+library(ICC)
+```
+
+
+```{r include=FALSE}
+#attaching the data
+
+data<-read.csv("International Students Survey.csv")
+
+attach(data)
+```
+
+
+
+```{r}
+#Data preparation
+#Age
+table(Age)
+
+summary(as.numeric(Age))
+
+data$age<-recode(as.numeric(Age),"17:21=1; 22:26=2;27:hi=3")
+
+table(data$age)
+
+data$age<-factor(data$age,lab=c("17 to 21 yrs", "22 to 26 yrs", " 27 yrs and older")) 
+
+#country regions
+
+data$region[data$Home.country == 'Algeria'| 
+    data$Home.country == 'Botswana'| data$Home.country == 'Cameroon'|
+    data$Home.country == 'Chad'| data$Home.country == 'Congo'|
+    data$Home.country == 'DR Congo'|data$Home.country == 'Eritrea'|
+    data$Home.country == 'Ivory Coast'|
+    data$Home.country == 'Gambia'|data$Home.country == 'Ghana'|
+    data$Home.country == 'Kenya'|data$Home.country == 'Madagascar'|
+    data$Home.country == 'Niger'|data$Home.country == 'Nigeria'|
+    data$Home.country == 'South Africa'|data$Home.country == 'Sudan'|
+    data$Home.country == 'Uganda'|data$Home.country == 'Zambia'] <- 'Africa'
+
+
+data$region[data$Home.country == 'Australia'| data$Home.country == 'Austria'| 
+    data$Home.country == 'Bosnia and Herzegovina'|
+    data$Home.country == 'Bulgaria'| data$Home.country == 'Europe'|
+    data$Home.country == 'France'| data$Home.country == 'Germany'|
+    data$Home.country == 'Italy'|data$Home.country == 'Poland'|
+    data$Home.country == 'Portugal'|data$Home.country == 'Serbia'|
+    data$Home.country == 'Spain'|data$Home.country == 'Switzerland'|
+    data$Home.country == 'Republic of North Macedonia'|
+    data$Home.country == 'USA'] <- 'Europe, USA & Australia'
+
+
+data$region[data$Home.country == 'Armenia'| 
+    data$Home.country == 'Azerbaijan'|data$Home.country == 'Belarus'|
+    data$Home.country == 'Estonia'|data$Home.country == 'Georgia'|
+    data$Home.country == 'Georgia'|data$Home.country == 'Kazakhstan'|
+    data$Home.country == 'Kyrgyzstan'|data$Home.country == 'Latvia'|
+    data$Home.country == 'Moldova'|data$Home.country == 'Tajikistan'|
+    data$Home.country == 'Turkmenistan'|data$Home.country == 'Ukraine'|
+    data$Home.country == 'Uzbekistan'] <- 'Former Soviet Republics'
+
+
+data$region[data$Home.country == 'Bahrain'| 
+    data$Home.country == 'Egypt'| data$Home.country == 'Iran'|
+    data$Home.country == 'Israel'| data$Home.country == 'Lebanon'|
+    data$Home.country == 'Syria'| 
+    data$Home.country == 'Turkey'] <- 'Middle East'
+
+
+data$region[data$Home.country == 'Bangladesh'| 
+    data$Home.country == 'India'| data$Home.country == 'Nepal'|
+    data$Home.country == 'Pakistan'| 
+    data$Home.country == 'Sri Lanka'] <- 'Southern Asia'
+
+data$region[data$Home.country == 'Brazil'| 
+    data$Home.country == 'Colombia'|data$Home.country == 'Ecuador'|
+    data$Home.country == 'Guatemala'| data$Home.country == 'Haiti'|
+    data$Home.country == 'Mexico'|
+    data$Home.country == 'Nicaragua'] <- 'Southern America'
+
+data$region[data$Home.country == 'China'| 
+    data$Home.country == 'Japan'|data$Home.country == 'Mongolia'| 
+    data$Home.country == 'South Korea'|data$Home.country == 'Hong Kong'|
+    data$Home.country == 'Taiwan'] <- 'Eastern Asia'
+
+data$region[data$Home.country == 'Indonesia'|
+    data$Home.country == 'Philippines'|data$Home.country == 'Thailand'|
+    data$Home.country == 'Vietnam'] <- 'Southern Eastern Asia'
+
+table(data$region, useNA = "ifany")
+
+attach(data)
+```
+
+
+
+```{r}
+#pushfactors
+#unavailable program
+unavailable.program <-as.factor(Unavailability.of.the.desired.study.program)
+unavailable.program <- factor(unavailable.program,levels = c(1,2,3,4,5),
+                             labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(unavailable.program, Unavailability.of.the.desired.study.program)
+
+#quality of education
+low.educational.quality<-as.factor(Low.quality.of.education)
+low.educational.quality <- factor(low.educational.quality,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(low.educational.quality, Low.quality.of.education)
+
+#competitive University admission in home country
+competitive.admission<-as.factor(Competitive.university.admission.process..difficult.to.gain.admission.to.a.quality.local.institution)
+competitive.admission <- factor(competitive.admission,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(competitive.admission, Competitive.university.admission.process..difficult.to.gain.admission.to.a.quality.local.institution)
+
+#Advantage of international degree
+advantage.of.international.degree<-as.factor(Perceived.advantage.of.international.degree.over.a.local.one.at.the.local.job.market)
+advantage.of.international.degree <- factor(advantage.of.international.degree,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(advantage.of.international.degree, Perceived.advantage.of.international.degree.over.a.local.one.at.the.local.job.market)
+
+#unavailability of scholarships
+unavailability.of.scholarship<-as.factor(Unavailability.of.scholarship.opportunities)
+unavailability.of.scholarship <- factor(unavailability.of.scholarship,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(unavailability.of.scholarship, Unavailability.of.scholarship.opportunities)
+
+#encouragement from family
+encouragement.from.family<-as.factor(Encouragement.from.my.family.to.study.abroad)
+encouragement.from.family <- factor(encouragement.from.family,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(encouragement.from.family, Encouragement.from.my.family.to.study.abroad)
+
+#encouragement from friends
+encouragement.from.friends<-as.factor(Encouragement.from..my.friends.to.study.abroad)
+encouragement.from.friends <- factor(encouragement.from.friends,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(encouragement.from.friends, Encouragement.from..my.friends.to.study.abroad)
+
+#better earning prospects
+better.earning.prospects<-as.factor(Better.earning.prospects.abroad)
+better.earning.prospects <- factor(better.earning.prospects,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(better.earning.prospects, Better.earning.prospects.abroad)
+
+#social prestige
+social.prestige<-as.factor(The.social.prestige.of.studying.abroad)
+social.prestige <- factor(social.prestige,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(social.prestige, The.social.prestige.of.studying.abroad)
+
+#experience different culture
+experience.different.culture<-as.factor(To.experience.a.different.culture)
+experience.different.culture <- factor(experience.different.culture,
+                                  levels = c(1,2,3,4,5),
+                                  labels = c("Not at all influential", 
+                                        "Slightly influential", 
+                                        "Somewhat influential", 
+                                        "Very influential", 
+                                        "Extremely influential"))
+
+table(experience.different.culture, To.experience.a.different.culture)
+
+```
+
+
+```{r}
+#push factors
+
+data$pushfactors<-data.frame(unavailable.program,low.educational.quality,competitive.admission,advantage.of.international.degree,unavailability.of.scholarship,encouragement.from.family,encouragement.from.friends,better.earning.prospects,social.prestige,experience.different.culture)
+
+attach(data)
+
+freq(pushfactors)
+kable(freq(pushfactors), caption = "Push Factors")%>%
+   kable_styling(full_width = F)%>%
+  gro
+
+kable(mtcars[1:10, 1:6], caption = "Group Rows") %>%
+  kable_styling("striped", full_width = F) %>%
+  pack_rows("Group 1", 4, 7) %>%
+  pack_rows("Group 2", 8, 10)
+```
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r include=FALSE}
+#push factors
+
